@@ -1,0 +1,7 @@
+source ~/.local/share/nmde/default/bash/shell
+source ~/.local/share/nmde/default/bash/aliases
+source ~/.local/share/nmde/default/bash/functions
+source ~/.local/share/nmde/default/bash/prompt
+source ~/.local/share/nmde/default/bash/init
+source ~/.local/share/nmde/default/bash/envs
+[[ $- == *i* ]] && bind -f ~/.local/share/nmde/default/bash/inputrc
