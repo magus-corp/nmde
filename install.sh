@@ -3,11 +3,40 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-nmde_INSTALL=~/.local/share/nmde/install
+# --- START: Make the script position-independent ---
+
+# Define the destination directory for nmde
+NMDE_DEST_DIR="$HOME/.local/share/nmde"
+# Get the directory of the currently running script (assumes it's in the project root)
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+
+# Check if we are already running from the final destination directory
+if [ "$SCRIPT_DIR" != "$NMDE_DEST_DIR" ]; then
+    echo "Preparing nmde for installation..."
+    # Ensure the parent directory exists
+    mkdir -p "$HOME/.local/share"
+    # Remove any previous installation to ensure a clean state
+    rm -rf "$NMDE_DEST_DIR"
+    # Copy the entire project directory to the destination
+    cp -r "$SCRIPT_DIR" "$NMDE_DEST_DIR"
+    echo "Installation files are now located in $NMDE_DEST_DIR."
+    echo "Re-launching the installer from the new location..."
+    echo ""
+    # Execute the script from its new, standardized location and exit the current script
+    bash "$NMDE_DEST_DIR/install.sh"
+    exit 0
+fi
+
+# --- END: Make the script position-independent ---
+
+# From this point on, the script is running from ~/.local/share/nmde
+# All hardcoded paths will now resolve correctly.
+nmde_INSTALL=$NMDE_DEST_DIR/install
 
 # Give people a chance to retry running the installation
 catch_errors() {
-  echo -e "\n\e[31mnmde installation failed!\e[0m"
+  echo -e "
+\e[31mnmde installation failed!\e[0m"
   echo "You can retry by running: bash ~/.local/share/nmde/install.sh"
   echo "Get help from the community: https://discord.gg/tXFUdasqhY"
 }
@@ -16,7 +45,8 @@ trap catch_errors ERR
 
 show_logo() {
   clear
-  tte -i ~/.local/share/nmde/logo.txt --frame-rate ${2:-120} ${1:-expand}
+  # All paths are now relative to the new script location
+  tte -i "$NMDE_DEST_DIR/logo.txt" --frame-rate ${2:-120} ${1:-expand}
   echo
 }
 
