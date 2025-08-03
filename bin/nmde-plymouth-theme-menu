@@ -1,10 +1,10 @@
 #!/bin/zsh
 
-# Get a list of installed Plymouth themes, removing the "adi-arch" line and the header
-THEMES=($(plymouth-set-default-theme -l | grep -v "adi-arch" | tail -n +2))
+# Get a list of installed Plymouth themes, removing the "adi" line and the header
+THEMES=($(plymouth-set-default-theme -l | grep -v "adi" | tail -n +2))
 
-# Add the "adi-arch" theme to the list
-THEMES+=("adi-arch")
+# Add the "adi" theme to the list
+THEMES+=("adi")
 
 # Let the user choose a theme
 CHOICE=$(printf "%s\n" "${THEMES[@]}" | gum choose --header "Select a Plymouth Theme")

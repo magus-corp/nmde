@@ -97,7 +97,7 @@ source $nmde_INSTALL/desktop/theme.sh
 
 # Set the default plymouth theme and rebuild initramfs
 show_subtext "Configuring boot animation"
-sudo plymouth-set-default-theme adi-arch
+sudo plymouth-set-default-theme adi
 sudo mkinitcpio -P
 
 source $nmde_INSTALL/desktop/bluetooth.sh
