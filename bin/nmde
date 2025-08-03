@@ -30,7 +30,7 @@ main_menu() {
 
 update_menu() {
   show_ascii_art
-  local menu=("nmde" "Waybar" "Walker" "Plymouth" "SwayOSD" "Desktop apps" "Back")
+  local menu=("nmde" "Waybar" "Walker" "Plymouth" "SwayOSD" "Desktop apps" "Logo" "Back")
   local commands=(
     "nmde-update"
     "nmde-refresh-waybar"
@@ -38,6 +38,7 @@ update_menu() {
     "nmde-refresh-plymouth"
     "nmde-refresh-swayosd"
     "nmde-refresh-applications"
+    "nmde-generate-logo"
     "main_menu"
   )
   local choice

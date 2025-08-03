@@ -11,11 +11,14 @@ ansi_art='
   ▀█   ███   █▀    ███    █▀    ████████▀  ████████▀   ▄████████▀      ████████▀   ▀██████▀    ███    ███  ▄████▀      
                                                                                                ███    ███             ' 
 clear
-echo -e "\n$ansi_art\n"
+echo -e "
+$ansi_art
+"
 
 sudo pacman -Sy --noconfirm --needed git
 
-echo -e "\nCloning nmde..."
+echo -e "
+Cloning nmde..."
 rm -rf ~/.local/share/nmde/
 git clone https://github.com/magus-corp/nmde.git ~/.local/share/nmde >/dev/null
 
@@ -27,5 +30,6 @@ if [[ -n "$nmde_REF" ]]; then
   cd -
 fi
 
-echo -e "\nInstallation starting..."
-source ~/.local/share/nmde/install.sh
+echo -e "
+Installation starting..."
+bash ~/.local/share/nmde/install.sh

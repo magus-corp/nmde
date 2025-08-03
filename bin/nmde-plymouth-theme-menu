@@ -1,0 +1,26 @@
+#!/bin/zsh
+
+# Get a list of installed Plymouth themes, removing the "adi-arch" line and the header
+THEMES=($(plymouth-set-default-theme -l | grep -v "adi-arch" | tail -n +2))
+
+# Add the "adi-arch" theme to the list
+THEMES+=("adi-arch")
+
+# Let the user choose a theme
+CHOICE=$(printf "%s\n" "${THEMES[@]}" | gum choose --header "Select a Plymouth Theme")
+
+# Exit if no choice was made
+if [ -z "$CHOICE" ]; then
+  exit 0
+fi
+
+# Set the chosen theme
+echo "Setting Plymouth theme to $CHOICE..."
+plymouth-set-default-theme "$CHOICE"
+
+# Rebuild the initramfs
+echo "Rebuilding initramfs (this may take a moment)..."
+sudo mkinitcpio -P
+
+echo "Plymouth theme updated successfully!"
+

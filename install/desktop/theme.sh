@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Install a modern Plymouth theme
+yay -S --noconfirm --needed plymouth-theme-adi-arch
+
 # Use dark mode for QT apps too (like kdenlive)
 if ! yay -Q kvantum-qt5 &>/dev/null; then
   yay -S --noconfirm kvantum-qt5

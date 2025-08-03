@@ -49,8 +49,8 @@ fi
 
 # Link .zshrc and .p10k.zsh
 echo "Linking .zshrc and .p10k.zsh..."
-ln -sf "~/.local/share/nmde/default/zsh/.zshrc" "$HOME/.zshrc"
-ln -sf "~/.local/share/nmde/default/zsh/.p10k.zsh" "$HOME/.p10k.zsh"
+ln -sf "$HOME/.local/share/nmde/default/zsh/zshrc" "$HOME/.zshrc"
+ln -sf "$HOME/.local/share/nmde/default/zsh/p10k.zsh" "$HOME/.p10k.zsh"
 
 # Set zsh as default shell in a non-interactive way
 echo "Setting zsh as the default shell for user $USER..."

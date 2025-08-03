@@ -83,12 +83,23 @@ source $nmde_INSTALL/development/docker.sh
 source $nmde_INSTALL/development/firewall.sh
 source $nmde_INSTALL/development/zsh.sh
 
+# Generate Plymouth Logo
+show_logo block-wave 240
+show_subtext "Generating custom boot logo"
+$NMDE_DEST_DIR/bin/nmde-generate-logo
+
 # Desktop
 show_logo slice 60
 show_subtext "Installing desktop tools [3/5]"
 source $nmde_INSTALL/desktop/desktop.sh
 source $nmde_INSTALL/desktop/hyprlandia.sh
 source $nmde_INSTALL/desktop/theme.sh
+
+# Set the default plymouth theme and rebuild initramfs
+show_subtext "Configuring boot animation"
+plymouth-set-default-theme adi-arch
+sudo mkinitcpio -P
+
 source $nmde_INSTALL/desktop/bluetooth.sh
 source $nmde_INSTALL/desktop/asdcontrol.sh
 source $nmde_INSTALL/desktop/fonts.sh
