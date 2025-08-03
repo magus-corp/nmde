@@ -95,10 +95,11 @@ source $nmde_INSTALL/desktop/desktop.sh
 source $nmde_INSTALL/desktop/hyprlandia.sh
 source $nmde_INSTALL/desktop/theme.sh
 
-# Set the default plymouth theme and rebuild initramfs
-show_subtext "Configuring boot animation"
-sudo plymouth-set-default-theme adi
-sudo mkinitcpio -P
+# TODO: Add feature to configure Plymouth boot animation.
+# FIXME: The theme name is incorrect and causes an error.
+# show_subtext "Configuring boot animation"
+# sudo plymouth-set-default-theme adi-arch
+# sudo mkinitcpio -P
 
 source $nmde_INSTALL/desktop/bluetooth.sh
 source $nmde_INSTALL/desktop/asdcontrol.sh
