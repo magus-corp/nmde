@@ -51,6 +51,7 @@ source $nmde_INSTALL/development/nvim.sh
 source $nmde_INSTALL/development/ruby.sh
 source $nmde_INSTALL/development/docker.sh
 source $nmde_INSTALL/development/firewall.sh
+source $nmde_INSTALL/development/zsh.sh
 
 # Desktop
 show_logo slice 60

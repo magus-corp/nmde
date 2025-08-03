@@ -43,8 +43,8 @@ fi
 
 # Link .zshrc and .p10k.zsh
 echo "Linking .zshrc and .p10k.zsh..."
-ln -sf "/home/magus/projects/magus/nmde/default/zsh/.zshrc" "$HOME/.zshrc"
-ln -sf "/home/magus/projects/magus/nmde/default/zsh/.p10k.zsh" "$HOME/.p10k.zsh"
+ln -sf "~/.local/share/nmde/default/zsh/.zshrc" "$HOME/.zshrc"
+ln -sf "~/.local/share/nmde/default/zsh/.p10k.zsh" "$HOME/.p10k.zsh"
 
 # Set zsh as default shell
 echo "Setting zsh as default shell..."
