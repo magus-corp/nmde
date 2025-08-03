@@ -52,9 +52,9 @@ echo "Linking .zshrc and .p10k.zsh..."
 ln -sf "~/.local/share/nmde/default/zsh/.zshrc" "$HOME/.zshrc"
 ln -sf "~/.local/share/nmde/default/zsh/.p10k.zsh" "$HOME/.p10k.zsh"
 
-# Set zsh as default shell
-echo "Setting zsh as the default shell..."
-chsh -s "$(which zsh)"
+# Set zsh as default shell in a non-interactive way
+echo "Setting zsh as the default shell for user $USER..."
+sudo usermod --shell "$(which zsh)" "$USER"
 echo "Default shell has been set to Zsh. Please log out and log back in for the change to take effect."
 
 echo "Zsh and Powerlevel10k setup complete. Remember to run 'p10k configure' after logging into zsh for the first time."
