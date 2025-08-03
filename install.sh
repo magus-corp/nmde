@@ -84,7 +84,7 @@ source $nmde_INSTALL/development/firewall.sh
 source $nmde_INSTALL/development/zsh.sh
 
 # Generate Plymouth Logo
-show_logo block-wave 240
+show_logo slice 240
 show_subtext "Generating custom boot logo"
 $NMDE_DEST_DIR/bin/nmde-generate-logo
 
