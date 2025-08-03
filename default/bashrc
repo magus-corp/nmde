@@ -1,6 +1,6 @@
 # All the default nmde aliases and functions
 # (don't mess with these directly, just overwrite them here!)
-source ~/.local/share/nmde/default/bash/rc
+source ~/.local/share/nmde/default/zsh/.zshrc
 
 # Add your own exports, aliases, and functions here.
 #

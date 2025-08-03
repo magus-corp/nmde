@@ -1,3 +1,10 @@
+source ~/.local/share/nmde/default/bash/shell
+source ~/.local/share/nmde/default/bash/aliases
+source ~/.local/share/nmde/default/bash/functions
+source ~/.local/share/nmde/default/bash/prompt
+source ~/.local/share/nmde/default/bash/init
+source ~/.local/share/nmde/default/bash/envs
+[[ $- == *i* ]] && bind -f ~/.local/share/nmde/default/bash/inputrc
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -67,15 +74,6 @@ source $ZSH/oh-my-zsh.sh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# Custom additions for this project
-if [ -f "$HOME/.magus_alias" ]; then
-  source "$HOME/.magus_alias"
-fi
-
-if [ -f "$HOME/.profile" ]; then
-  source "$HOME/.profile"
-fi
 
 # Set a default editor if not already set
 export EDITOR="${EDITOR:-nvim}"
