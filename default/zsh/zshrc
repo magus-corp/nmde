@@ -137,8 +137,6 @@ if command -v fzf &> /dev/null;
   fi
 fi
 
-. "$HOME/.local/share/../bin/env"
-
 # Lazy-load NVM in a way that preserves arguments on the first run.
 export NVM_DIR="$HOME/.config/nvm"
 
