@@ -33,6 +33,13 @@ fi
 # All hardcoded paths will now resolve correctly.
 nmde_INSTALL=$NMDE_DEST_DIR/install
 
+# Check for --full flag to determine installation type
+if [[ " $@ " =~ " --full " ]]; then
+  nmde_BARE=""
+else
+  nmde_BARE="true"
+fi
+
 # Give people a chance to retry running the installation
 catch_errors() {
   echo -e "

@@ -1,14 +1,18 @@
 #!/bin/bash
 
-# Copy over nmde configs
-
-# Set lowercase XDG user directories
-cp ~/.local/share/nmde/default/user-dirs.dirs ~/.config/user-dirs.dirs
-
-cp -R ~/.local/share/nmde/config/* ~/.config/
+# Symlink nmde configs
+if [ -z "$nmde_BARE" ]; then
+  for config_path in ~/.local/share/nmde/config/*; do
+    config_name=$(basename "$config_path")
+    target_path="$HOME/.config/$config_name"
+    rm -rf "$target_path"
+    ln -s "$config_path" "$target_path"
+  done
+fi
 
 # Use default bashrc from nmde
-cp ~/.local/share/nmde/default/bashrc ~/.bashrc
+rm -f ~/.bashrc
+ln -s ~/.local/share/nmde/default/bashrc ~/.bashrc
 
 # Ensure application directory exists for update-desktop-database
 mkdir -p ~/.local/share/applications
