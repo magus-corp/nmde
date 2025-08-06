@@ -1,0 +1,13 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    env_file:
+      - ./env_files/homepage.env
+    # PUID, PGID are expected in homepage.env
+    ports:
+      - 3077:3000
+    volumes:
+      - ./config:/app/config # Make sure your local config directory exists
+    #      - /var/run/docker.sock:/var/run/docker.sock:ro # optional, for docker integrations
+    restart: unless-stopped
