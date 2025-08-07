@@ -1,6 +1,14 @@
-version: "3.3"
+version: "3.8"
+
+networks:
+  kokoro_network:
+    driver: bridge
+    name: kokoro_network
+
 services:
-  kokoro-fastapi-gpu:
+  kokoro:
+    image: ghcr.io/remsky/kokoro-fastapi-gpu:v0.1.4
+    container_name: kokoro
     restart: always
     deploy:
       resources:
@@ -11,8 +19,6 @@ services:
               capabilities:
                 - gpu
     ports:
-      - 8880:8880
-    image: ghcr.io/remsky/kokoro-fastapi-gpu:v0.1.4
-#    command: "#NVIDIA GPU"
-networks: {}
-
+      - "8880:8880"
+    networks:
+      - kokoro_network
