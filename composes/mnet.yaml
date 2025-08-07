@@ -1,8 +1,16 @@
-version: "3.3"
+version: "3.8"
+
+networks:
+  mnet_network:
+    driver: bridge
+    name: mnet_network
+
 services:
   petals:
+    image: learningathome/petals:2.2
+    container_name: mnet-petals
     ports:
-      - 31330:31330
+      - "31330:31330"
     ipc: host
     restart: always
     deploy:
@@ -15,7 +23,6 @@ services:
                 - gpu
     volumes:
       - ./petals-cache:/cache
-    image: learningathome/petals:2.2
     env_file:
       - ./env_files/mnet.env
     command: >
@@ -23,4 +30,5 @@ services:
       meta-llama/Meta-Llama-3-8B-Instruct
       --token $$HF_TOKEN
       --initial_peers /ip4/35.193.78.153/tcp/31337/p2p/QmexzJsqEhhViHDSkFHFqANmp28oUBsJ3RJ2Ssi1ZQwg3q'
-networks: {}
+    networks:
+      - mnet_network
