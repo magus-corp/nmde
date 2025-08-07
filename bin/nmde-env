@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DB_FILE="$HOME/.local/share/nmde/composes/envs.db"
+DB_FILE="$HOME/.local/share/nmde/composes/env_files/envs.db"
 
 # Function to list services
 list_services() {
@@ -10,7 +10,7 @@ list_services() {
 # Function to list variables for a service
 list_vars() {
   local service=$1
-  sqlite3 "$DB_FILE" "SELECT key, value FROM envs WHERE service = '$service' ORDER BY key;" | while IFS='|' read -r key value; do
+  sqlite3 "$DB_FILE" "SELECT key, value FROM envs WHERE service = '$service' ORDER BY key;" | while IFS='|' read -r key value;
     printf "% -40s = %s\n" "$key" "$value"
   done
 }
@@ -43,7 +43,7 @@ delete_var() {
 # Service menu
 service_menu() {
   local service=$1
-  while true; do
+  while true;
     clear
     gum style --border normal --margin "1" --padding "1" "Managing Environment for: $service"
     list_vars "$service"
@@ -60,7 +60,13 @@ service_menu() {
 
 # Main menu
 main_menu() {
-  while true; do
+  # If a service is passed as an argument, go directly to its menu
+  if [ -n "$1" ]; then
+    service_menu "$1"
+    exit 0
+  fi
+
+  while true;
     clear
     local service=$(list_services | gum choose --height 20 --header "Select a service to manage")
     
@@ -72,4 +78,4 @@ main_menu() {
   done
 }
 
-main_menu
+main_menu "$1"

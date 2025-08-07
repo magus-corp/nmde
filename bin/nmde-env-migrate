@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DB_FILE="$HOME/.local/share/nmde/composes/envs.db"
+DB_FILE="$HOME/.local/share/nmde/composes/env_files/envs.db"
 ENV_DIR="$HOME/.local/share/nmde/composes/env_files"
 
 # Exit if the database already exists
