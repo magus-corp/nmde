@@ -1,0 +1,17 @@
+#!/bin/bash
+# This script now acts as a launcher for the main Python TUI.
+# It ensures that the script is run from within the project's virtual environment.
+
+# Get the directory of this script
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+PROJECT_ROOT="$SCRIPT_DIR/.."
+VENV_PYTHON="$PROJECT_ROOT/.venv/bin/python"
+TUI_SCRIPT="$SCRIPT_DIR/nmde_tui.py"
+
+if [ -f "$VENV_PYTHON" ]; then
+    "$VENV_PYTHON" "$TUI_SCRIPT"
+else
+    echo "Error: Python virtual environment not found. Please run the installer."
+    sleep 3
+    exit 1
+fi
