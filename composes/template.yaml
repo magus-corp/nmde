@@ -1,0 +1,24 @@
+version: "3.8"
+
+# This is a template for creating your own docker-compose stacks.
+#
+# 1. Copy this file to a new file in the `composes` directory (e.g., `my-app.yaml`).
+# 2. Change the service name from `my-app` to the name of your application.
+# 3. Change the image to the docker image you want to use.
+# 4. Add any necessary ports, volumes, and environment variables.
+# 5. Make sure to create a dedicated network for your application.
+
+networks:
+  my-app_network:
+    driver: bridge
+    name: my-app_network
+
+services:
+  my-app:
+    image: hello-world
+    container_name: my-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    networks:
+      - my-app_network
