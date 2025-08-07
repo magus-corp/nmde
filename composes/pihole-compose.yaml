@@ -1,4 +1,9 @@
-version: "3"
+version: "3.8"
+
+networks:
+  pihole_network:
+    driver: bridge
+    name: pihole_network
 
 services:
   pihole:
@@ -17,3 +22,5 @@ services:
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
+    networks:
+      - pihole_network
