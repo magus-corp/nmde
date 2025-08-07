@@ -1,6 +1,14 @@
-version: "3.3"
+version: "3.8"
+
+networks:
+  whisper_network:
+    driver: bridge
+    name: whisper_network
+
 services:
-  openai-whisper-asr-webservice:
+  whisper:
+    image: onerahmet/openai-whisper-asr-webservice:latest-gpu
+    container_name: whisper
     restart: always
     deploy:
       resources:
@@ -11,10 +19,10 @@ services:
               capabilities:
                 - gpu
     ports:
-      - 9000:9000
+      - "9000:9000"
     env_file:
       - ./env_files/whisper.env
-    image: onerahmet/openai-whisper-asr-webservice:latest-gpu
     volumes:
       - ./whisper_models:/root/.cache/whisper
-networks: {}
+    networks:
+      - whisper_network
