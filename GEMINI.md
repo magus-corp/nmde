@@ -1,16 +1,19 @@
-# New feature: Adding a bunch of dockerized applications
+# Gemini Project Brief: `nmde` Python Migration
 
-I will import an folder called composes. In this folder you will find a bunch of applications and services in docker compose format.
-This applications should be standartized:
-- All should have the same formatting
-- All that need some kinda of database should have the database inside the docker-compose of the target application now exposing ports to the system.
-- We will prioritize the minimization of ports of the host but separating the networks.
-- We Will create an application like the nmde one in the bin folder to manage what are the docker-composes that are up and what are the ones that are down.
-- The application should follow the mnde style and structure. With an x marks the spot kinda of selection list with the sync option at the bottom that launch the ones marked and down the ones not marked. 
-- The list should be dynamic. We should provide a template so the user can write their own docker-composes stacks. Adding the to the composes folder should automagicly make them avaliable in the list.
-- We need routines that check for port overlap and other type of simple errors
-- After launch the visibility and overall manipulation of the applications will be done from the lazydocker application.
-- The environment manipulation should be storage and integrated with an kinda of sqlite (or something idk - envs is a open problem in my mind you can sugest a solution think elegant)
+This document outlines the core mission for the Gemini agent.
+
+## Primary Objective: Migrate from Bash to Python
+
+The entire `nmde` scripting framework will be migrated from Bash to Python to improve robustness, maintainability, and developer experience. All existing functionality must be preserved.
+
+### Core Migration Tasks:
+
+1.  **Rename `bin` to `spells`**: The script directory will be renamed to `spells`.
+2.  **Adopt `uv` for Environment Management**:
+    -   A local virtual environment (`.venv`) will be created and managed by `uv`.
+    -   All Python dependencies will be installed into this `.venv`.
+3.  **Migrate All Scripts**: Every script in the `bin` (soon to be `spells`) directory will be rewritten in Python.
+4.  **Integrate `spells`**: Existing `spells` scripts will be integrated into the new Python framework.
 
 ## Developpment Loop
 
