@@ -3,28 +3,37 @@
 COMPOSE_DIR="$HOME/.local/share/nmde/composes"
 STATE_FILE="$COMPOSE_DIR/.state"
 
+# Function to check for dependencies
+check_dependencies() {
+  if ! command -v gum &> /dev/null;
+  then
+    echo "gum could not be found. Please install it."
+    exit 1
+  fi
+  if ! command -v yq &> /dev/null;
+  then
+    echo "yq could not be found. Please install it."
+    exit 1
+  fi
+}
+
 # Function to check for port conflicts
 check_ports() {
-  local compose_files=($(get_compose_files))
+  local compose_files=($@)
   local all_ports=()
   local has_conflict=false
 
   for file in "${compose_files[@]}"; do
-    ports=$(yq e '.services.*.ports[]?' "$COMPOSE_DIR/$file" 2>/dev/null)
+    ports=$(yq e '.services.*.ports[].published' "$COMPOSE_DIR/$file" 2>/dev/null)
     for port in $ports; do
-      host_port=$(echo "$port" | cut -d: -f1)
-      if [[ " ${all_ports[@]} " =~ " ${host_port} " ]]; then
-        echo "Port conflict found for port $host_port in $file"
+      if [[ " ${all_ports[@]} " =~ " ${port} " ]]; then
+        gum confirm "Port conflict found for port $port in $file. Continue?" || exit 1
         has_conflict=true
       else
-        all_ports+=("$host_port")
+        all_ports+=("$port")
       fi
     done
   done
-
-  if [ "$has_conflict" = true ]; then
-    exit 1
-  fi
 }
 
 # Function to get the list of compose files
@@ -41,69 +50,42 @@ get_up_files() {
 
 # Function to show the main menu
 main_menu() {
-  check_ports
-
+  check_dependencies
+  
   local compose_files=($(get_compose_files))
   local up_files=($(get_up_files))
-  local choices=()
-
+  
+  # Pre-select the files that are already up
+  local selected_options=""
   for file in "${compose_files[@]}"; do
     if [[ " ${up_files[@]} " =~ " ${file} " ]]; then
-      choices+=("✓ $file")
-    else
-      choices+=("  $file")
+      if [ -z "$selected_options" ]; then
+        selected_options="$file"
+      else
+        selected_options="$selected_options,$file"
+      fi
     fi
   done
 
-  selected=$(printf "%s\n" "${choices[@]}" "Sync" | gum choose --no-limit --header "Select compose files to run")
+  gum style --border normal --margin "1" --padding "1" --border-foreground 212 "Select services to run with <space>. Press <enter> to sync."
+
+  selected=$(gum choose --no-limit --selected="$selected_options" "${compose_files[@]}")
 
   if [ -n "$selected" ]; then
-    if [[ "$selected" == "Sync" ]]; then
-      local selected_files=()
-      for choice in "${choices[@]}"; do
-        if [[ "$choice" == ✓* ]]; then
-          selected_files+=("$(echo "$choice" | sed 's/✓ //g' | xargs)")
-        fi
-      done
-      sync_composes "${selected_files[@]}"
-    else
-        local selected_files=()
-        while IFS= read -r line; do
-          selected_files+=("$(echo "$line" | sed 's/✓ //g' | xargs)")
-        done <<< "$selected"
-        update_selection "${selected_files[@]}"
-    fi
-  fi
-}
-
-update_selection() {
-    local selected_files=($@)
-    local compose_files=($(get_compose_files))
-    local choices=()
-
-    for file in "${compose_files[@]}"; do
-        if [[ " ${selected_files[@]} " =~ " ${file} " ]]; then
-        choices+=("✓ $file")
-        else
-        choices+=("  $file")
-        fi
-    done
+    local selected_files=()
+    while IFS= read -r line; do
+      selected_files+=("$line")
+    done <<< "$selected"
     
-    selected=$(printf "%s\n" "${choices[@]}" "Sync" | gum choose --no-limit --header "Select compose files to run")
-
-    if [ -n "$selected" ]; then
-        if [[ "$selected" == "Sync" ]]; then
-            sync_composes "${selected_files[@]}"
-        else
-            local new_selected_files=()
-            while IFS= read -r line; do
-                new_selected_files+=("$(echo "$line" | sed 's/✓ //g' | xargs)")
-            done <<< "$selected"
-            update_selection "${new_selected_files[@]}"
-        fi
-    fi
+    check_ports "${selected_files[@]}"
+    sync_composes "${selected_files[@]}"
+  else
+    # If nothing is selected, it means all services should be down
+    sync_composes
+  fi
+  
+  gum spin --spinner "globe" --title "Done!" -- sleep 1
 }
-
 
 # Function to sync the compose files
 sync_composes() {
@@ -114,7 +96,7 @@ sync_composes() {
   for file in "${selected_files[@]}"; do
     if [[ ! " ${up_files[@]} " =~ " ${file} " ]]; then
       echo "Bringing up $file"
-      # docker-compose -f "$COMPOSE_DIR/$file" up -d
+      docker-compose -f "$COMPOSE_DIR/$file" up -d
     fi
   done
 
@@ -122,12 +104,16 @@ sync_composes() {
   for file in "${up_files[@]}"; do
     if [[ ! " ${selected_files[@]} " =~ " ${file} " ]]; then
       echo "Bringing down $file"
-      # docker-compose -f "$COMPOSE_DIR/$file" down
+      docker-compose -f "$COMPOSE_DIR/$file" down
     fi
   done
 
   # Update state file
-  printf "%s\n" "${selected_files[@]}" > "$STATE_FILE"
+  if [ ${#selected_files[@]} -gt 0 ]; then
+    printf "%s\n" "${selected_files[@]}" > "$STATE_FILE"
+  else
+    rm -f "$STATE_FILE"
+  fi
 }
 
 main_menu
