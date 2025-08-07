@@ -23,8 +23,9 @@ main_menu() {
     ;; 
   Update) update_menu ;; 
   Setup) setup_menu ;; 
-  Composes) 
+  Composes)
     nmde-composes
+    ack_command
     main_menu
     ;; 
   Manual) open_manual ;; 
