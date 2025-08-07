@@ -1,4 +1,9 @@
-version: "3"
+version: "3.8"
+
+networks:
+  langflow_network:
+    driver: bridge
+    name: langflow_network
 
 services:
   langflow:
@@ -7,7 +12,9 @@ services:
     env_file:
       - ./env_files/langflow.env
     ports:
-      - 7860:7860
-    tty: true               
-    stdin_open: true        
+      - "7860:7860"
+    tty: true
+    stdin_open: true
     restart: unless-stopped
+    networks:
+      - langflow_network
