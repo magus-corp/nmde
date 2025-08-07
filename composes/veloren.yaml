@@ -1,4 +1,9 @@
-version: "3.5"
+version: "3.8"
+
+networks:
+  veloren_network:
+    driver: bridge
+    name: veloren_network
 
 services:
   game-server:
@@ -14,9 +19,15 @@ services:
         - "./userdata:/opt/userdata"
     env_file:
         - ./env_files/veloren.env
+    networks:
+      - veloren_network
+
   watchtower:
     image: containrrr/watchtower
+    container_name: veloren-watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 30 --stop-timeout 130s --cleanup veloren-game-server-master
     restart: on-failure:0
+    networks:
+      - veloren_network
