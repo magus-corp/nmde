@@ -29,8 +29,7 @@ def ack_command():
 
 # --- TUI Menus ---
 def theme_menu():
-    # This will be migrated later. For now, we call the old script.
-    run_spell("bin/nmde-theme-menu")
+    run_spell("theme_manager.py")
 
 def update_menu():
     # This will be migrated later. For now, we call the old script.

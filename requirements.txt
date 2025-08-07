@@ -2,3 +2,4 @@ ruamel.yaml
 pyyaml
 db-sqlite3
 gumpython
+gitpython
