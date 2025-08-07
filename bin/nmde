@@ -108,7 +108,7 @@ remove_theme_prompt() {
 
 setup_menu() {
   show_ascii_art
-  local menu=("Dropbox" "Steam" "Docker DBs" "Fingerprint sensor" "Fido2 device" "Manage Envs" "Back")
+  local menu=("Dropbox" "Steam" "Docker DBs" "Fingerprint sensor" "Fido2 device" "Manage Envs" "Rebuild Env DB" "Back")
   local commands=(
     "nmde-setup-dropbox"
     "nmde-setup-steam"
@@ -116,6 +116,7 @@ setup_menu() {
     "nmde-setup-fingerprint"
     "nmde-setup-fido2"
     "nmde-env"
+    "nmde-env-rebuild-db"
     "main_menu"
   )
   local choice
