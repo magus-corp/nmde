@@ -13,7 +13,11 @@ The entire `nmde` scripting framework will be migrated from Bash to Python to im
 4.  **Integrate `spells`**: The existing `spells` scripts will be integrated into the new Python framework.
 
 ## Developpment Loop
-
+### TLDR;
+Evaluate -> Plan -> Reevaluate -> Implement -> Reevaluate.
+Commit frequently after each logical step using `git add -A . && git commit -m "Commit(type): Descriptive message"
+**Packages**: Use `uv add <package>` and `uv sync` for managing the project's virtual environment.
+### Explaining
 1) Evaluate: Always think in what you will do, how you will do it and the conseguences
 - Commit-
 2) Plan: After thinking, write your plan.
