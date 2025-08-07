@@ -1,4 +1,9 @@
-version: '3.5'
+version: "3.8"
+
+networks:
+  tubearchivist_network:
+    driver: bridge
+    name: tubearchivist_network
 
 services:
   tubearchivist:
@@ -6,9 +11,8 @@ services:
     restart: unless-stopped
     image: bbilly1/tubearchivist
     ports:
-      - 8000:8000
+      - "8000:8000"
     volumes:
-      # - media:/youtube
       - ~/media/youtube:/youtube
       - cache:/cache
     env_file:
@@ -22,32 +26,34 @@ services:
     depends_on:
       - archivist-es
       - archivist-redis
+    networks:
+      - tubearchivist_network
+
   archivist-redis:
     image: redis/redis-stack-server
     container_name: archivist-redis
     restart: unless-stopped
-    expose:
-      - "6379"
     volumes:
       - redis:/data
     depends_on:
       - archivist-es
+    networks:
+      - tubearchivist_network
+
   archivist-es:
-    image: bbilly1/tubearchivist-es         # only for amd64, or use official es 8.11.0
+    image: bbilly1/tubearchivist-es
     container_name: archivist-es
     restart: unless-stopped
     env_file:
       - ./env_files/tubearchivist.env
-    # ELASTIC_PASSWORD, ES_JAVA_OPTS, XPACK_SECURITY_ENABLED, DISCOVERY_TYPE, PATH_REPO
-    # are expected to be in tubearchivist.env
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
-      - es:/usr/share/elasticsearch/data    # check for permission error when using bind mount, see readme
-    expose:
-      - "9200"
+      - es:/usr/share/elasticsearch/data
+    networks:
+      - tubearchivist_network
 
 volumes:
   media:
