@@ -1,12 +1,22 @@
 version: "3.8"
+
+networks:
+  pgadmin_network:
+    driver: bridge
+    name: pgadmin_network
+
 services:
   pgadmin:
     image: dpage/pgadmin4:latest
+    container_name: pgadmin
     env_file:
       - ./env_files/pgadmin.env
     ports:
-      - 15432:80
+      - "15432:80"
     volumes:
       - pgadmin:/var/lib/pgadmin
+    networks:
+      - pgadmin_network
+
 volumes:
   pgadmin:
