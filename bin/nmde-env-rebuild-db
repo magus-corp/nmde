@@ -13,22 +13,22 @@ if gum confirm "This will delete the existing environment database and rebuild i
   echo "New database created."
 
   # Find all example env files
-  find "$ENV_DIR" -name "example.*.env" | while read -r example_file;
-  do
+  find "$ENV_DIR" -name "example.*.env" | while read -r example_file; do
     service_name=$(basename "$example_file" | sed -e 's/example.//' -e 's/.env//')
     
     echo "Migrating $service_name..."
 
     # Read each line, ignore comments and empty lines
-    grep -vE '^\s*#|^\s*$' "$example_file" | while IFS='=' read -r key value;
-    do
-      # Trim leading/trailing whitespace
+    grep -vE '^\s*#|^\s*$' "$example_file" | while IFS='=' read -r key value; do
+      # Trim leading/trailing whitespace from key
       key=$(echo "$key" | xargs)
-      value=$(echo "$value" | xargs)
+      
+      # Strip inline comments and then trim whitespace from value
+      value=$(echo "$value" | cut -d'#' -f1 | xargs)
       
       # Remove quotes from value if present
-      value=\"${value}\" # This line was problematic, it should be value="${value}"
-      value=\"${value}\" # This line was problematic, it should be value="${value}"
+      value="${value%"}"
+      value="${value#"}"
 
       # Insert into database
       sqlite3 "$DB_FILE" "INSERT OR REPLACE INTO envs (service, key, value) VALUES ('$service_name', '$key', '$value');"
