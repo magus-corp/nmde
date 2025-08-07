@@ -35,23 +35,7 @@ def update_menu():
     run_spell("system_manager.py")
 
 def setup_menu():
-    """Displays the setup menu."""
-    while True:
-        os.system("clear")
-        choice = gumpython.choose([
-            "Dropbox", "Steam", "Docker DBs", "Fingerprint sensor", 
-            "Fido2 device", "Manage Envs", "Back"
-        ])
-
-        if not choice or choice == "Back":
-            break
-        
-        if choice == "Manage Envs":
-            run_spell("nmde-env")
-        else:
-            # For now, call the old bash scripts for other setup items
-            script_name = f"nmde-setup-{choice.lower().replace(' ', '-')}"
-            run_spell(f"bin/{script_name}")
+    run_spell("setup_manager.py")
 
 def main_menu():
     """Displays the main application menu."""
