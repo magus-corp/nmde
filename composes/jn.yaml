@@ -1,6 +1,14 @@
+version: "3.8"
+
+networks:
+  jn_network:
+    driver: bridge
+    name: jn_network
+
 services:
   jupyter:
     image: quay.io/jupyter/pytorch-notebook:cuda12-python-3.11
+    container_name: jupyter
     deploy:
       resources:
         reservations:
@@ -8,10 +16,9 @@ services:
           - driver: nvidia
             count: all
             capabilities: [gpu]
-    container_name: jupyter
-    # volumes:
-    #   - ./jn_volume:/
     ports:
-      - 8888:8888
+      - "8888:8888"
     env_file:
       - ./env_files/jn.env
+    networks:
+      - jn_network
