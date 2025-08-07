@@ -83,6 +83,7 @@ source $nmde_INSTALL/config/nvidia.sh
 show_logo decrypt 920
 show_subtext "Installing terminal tools [2/5]"
 source $nmde_INSTALL/development/terminal.sh
+source $nmde_INSTALL/development/python.sh
 source $nmde_INSTALL/development/development.sh
 source $nmde_INSTALL/development/nvim.sh
 source $nmde_INSTALL/development/ruby.sh
