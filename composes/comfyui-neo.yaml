@@ -1,18 +1,22 @@
-version: '3.9'
+version: "3.8"
+
+networks:
+  comfyui_network:
+    driver: bridge
+    name: comfyui_network
 
 services:
-  comfyui-docker:
-    container_name: comfy-webui-docker
-    #build: # uncomment if building
-    #  context: .
-    #  dockerfile: Dockerfile
+  comfyui:
     image: ghcr.io/cyntachs/comfy-webui-docker:main
+    container_name: comfyui
     ports:
-      - 9897:5555
+      - "9897:5555"
     volumes:
       - /home/magus/comfy:/stable-diffusion
     env_file:
       - ./env_files/comfyui-neo.env
+    networks:
+      - comfyui_network
     deploy:
       resources:
         reservations:
