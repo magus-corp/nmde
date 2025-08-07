@@ -10,9 +10,12 @@ list_services() {
 # Function to list variables for a service
 list_vars() {
   local service=$1
-  sqlite3 "$DB_FILE" "SELECT key, value FROM envs WHERE service = '$service' ORDER BY key;" | while IFS='|' read -r key value;
-    printf "% -40s = %s\n" "$key" "$value"
-  done
+  # The { } brackets are essential to prevent syntax errors if a service has no envs
+  sqlite3 "$DB_FILE" "SELECT key, value FROM envs WHERE service = '$service' ORDER BY key;" | {
+    while IFS='|' read -r key value;
+      printf "% -40s = %s\n" "$key" "$value"
+    done
+  }
 }
 
 # Function to add or edit a variable
