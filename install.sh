@@ -93,7 +93,7 @@ source $nmde_INSTALL/development/zsh.sh
 # Generate Plymouth Logo
 show_logo slice 240
 show_subtext "Generating custom boot logo"
-$NMDE_DEST_DIR/bin/nmde-generate-logo
+$NMDE_DEST_DIR/spells/nmde-generate-logo
 
 # Desktop
 show_logo slice 60

@@ -13,7 +13,7 @@ git -C $nmde_path pull --autostash
 git -C $nmde_path diff --check || git -C $nmde_path reset --merge
 
 # Run migrations
-"$HOME/.local/share/nmde/bin/nmde-migrate"
+"$HOME/.local/share/nmde/spells/nmde-migrate"
 
 # Update system packages
 echo -e "\e[32m\nUpdate system packages\e[0m"

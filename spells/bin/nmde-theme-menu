@@ -30,4 +30,4 @@ clean_selection=$(echo "$selection" | sed -E 's/<[^>]+>//g')
 selected_theme=$(echo "$clean_selection" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 
 # Apply the selected theme
-"$HOME/.local/share/nmde/bin/nmde-theme-set" "$selected_theme"
+"$HOME/.local/share/nmde/spells/nmde-theme-set" "$selected_theme"

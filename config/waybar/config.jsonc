@@ -45,7 +45,7 @@
   },
   "custom/update": {
     "format": "",
-    "exec": "~/.local/share/nmde/bin/nmde-update-available",
+    "exec": "~/.local/share/nmde/spells/nmde-update-available",
     "on-click": "alacritty --class nmde --title nmde -e nmde-update",
     "interval": 3600
   },
@@ -58,7 +58,7 @@
     "format": "{:%A %H:%M}",
     "format-alt": "{:%d %B W%V %Y}",
     "tooltip": false,
-    "on-click-right": "~/.local/share/nmde/bin/nmde-cmd-tzupdate"
+    "on-click-right": "~/.local/share/nmde/spells/nmde-cmd-tzupdate"
   },
   "network": {
     "format-icons": ["󰤯","󰤟","󰤢","󰤥","󰤨"],

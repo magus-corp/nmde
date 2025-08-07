@@ -12,7 +12,7 @@ show_power_menu() {
 
   case "$selection" in
   *Lock*) hyprlock ;;
-  *Save*) ~/.local/share/nmde/bin/nmde-launch-screensaver ;;
+  *Save*) ~/.local/share/nmde/spells/nmde-launch-screensaver ;;
   *Suspend*) systemctl suspend ;;
   *Relaunch*) uwsm stop ;;
   *Restart*) systemctl reboot ;;

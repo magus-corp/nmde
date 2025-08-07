@@ -17,4 +17,4 @@ if [ -z "$nmde_BARE" ]; then
 fi
 
 # Copy over nmde applications
-source ~/.local/share/nmde/bin/nmde-refresh-applications || true
+source ~/.local/share/nmde/spells/nmde-refresh-applications || true

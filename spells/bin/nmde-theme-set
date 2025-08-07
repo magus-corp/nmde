@@ -51,4 +51,5 @@ makoctl reload
 hyprctl reload
 
 # Set new background
-"$HOME/.local/share/nmde/bin/nmde-theme-bg-next"
+"$HOME/.local/share/nmde/spells/nmde-restart-waybar"
+L54: "$HOME/.local/share/nmde/spells/nmde-theme-bg-next"

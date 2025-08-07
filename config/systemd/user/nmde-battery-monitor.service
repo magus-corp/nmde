@@ -4,5 +4,5 @@ After=graphical-session.target
 
 [Service]
 Type=oneshot
-ExecStart=%h/.local/share/nmde/bin/nmde-battery-monitor
+ExecStart=%h/.local/share/nmde/spells/nmde-battery-monitor
 Environment=DISPLAY=:0
