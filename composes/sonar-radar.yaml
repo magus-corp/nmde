@@ -1,53 +1,62 @@
-version: '3'
-services:
- radarr:
-  container_name: radarr
-  restart: unless-stopped
-  network_mode: host
-  ports:
-   - 7878:7878
-  volumes:
-    - ~/apps_data/radarr_config:/config
-    - ~/media/movies:/movies
-    - ~/media/downloads:/downloads
-  env_file:
-    - ./env_files/sonar-radar.env
-  image: linuxserver/radarr
- 
- sonarr:
-  container_name: sonarr
-  restart: unless-stopped
-  network_mode: host
-  ports:
-   - 8989:8989
-  volumes:
-    - ~/apps_data/sonarr_config:/config
-    - ~/media/series:/tv
-    - ~/media/downloads:/downloads
-  env_file:
-    - ./env_files/sonar-radar.env
-  image: linuxserver/sonarr
- 
- jackett:
-  container_name: jackett
-  restart: unless-stopped
-  network_mode: host
-  ports:
-   - 9117:9117
-  volumes:
-   - ~/apps_data/jackett_config:/config
-  env_file:
-    - ./env_files/sonar-radar.env
-  image: linuxserver/jackett
+version: "3.8"
 
- deluge:
-    image: linuxserver/deluge
-    container_name: deluge
-    network_mode: host
+networks:
+  sonar_radar_network:
+    driver: bridge
+    name: sonar_radar_network
+
+services:
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    restart: unless-stopped
+    ports:
+      - "7878:7878"
+    volumes:
+      - ~/apps_data/radarr_config:/config
+      - ~/media/movies:/movies
+      - ~/media/downloads:/downloads
     env_file:
       - ./env_files/sonar-radar.env
-    # PUID, PGID, TZ, DELUGE_LOGLEVEL are expected in sonar-radar.env
+    networks:
+      - sonar_radar_network
+
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    restart: unless-stopped
+    ports:
+      - "8989:8989"
+    volumes:
+      - ~/apps_data/sonarr_config:/config
+      - ~/media/series:/tv
+      - ~/media/downloads:/downloads
+    env_file:
+      - ./env_files/sonar-radar.env
+    networks:
+      - sonar_radar_network
+
+  jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    restart: unless-stopped
+    ports:
+      - "9117:9117"
+    volumes:
+      - ~/apps_data/jackett_config:/config
+    env_file:
+      - ./env_files/sonar-radar.env
+    networks:
+      - sonar_radar_network
+
+  deluge:
+    image: linuxserver/deluge
+    container_name: deluge
+    restart: unless-stopped
+    env_file:
+      - ./env_files/sonar-radar.env
     volumes:
       - ~/apps_data/deluge_config/:/config
       - ~/media/downloads:/downloads
-    restart: unless-stopped
+    networks:
+      - sonar_radar_network
