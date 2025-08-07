@@ -24,7 +24,7 @@ main_menu() {
   Update) update_menu ;; 
   Setup) setup_menu ;; 
   Composes)
-    nmde-composes
+    compose_manager.py
     ack_command
     main_menu
     ;; 
