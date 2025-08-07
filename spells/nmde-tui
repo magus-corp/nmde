@@ -32,8 +32,7 @@ def theme_menu():
     run_spell("theme_manager.py")
 
 def update_menu():
-    # This will be migrated later. For now, we call the old script.
-    run_spell("bin/nmde-update")
+    run_spell("system_manager.py")
 
 def setup_menu():
     """Displays the setup menu."""

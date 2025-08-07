@@ -1,7 +1,0 @@
-#!/bin/bash
-
-nmde-refresh-config waybar/config.jsonc
-nmde-refresh-config waybar/style.css
-
-# Restart waybar
-nmde-restart-waybar
