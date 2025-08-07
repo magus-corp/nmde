@@ -1,0 +1,38 @@
+#!/bin/bash
+
+ENV_DIR="$HOME/.local/share/nmde/composes/env_files"
+
+# Function to get the list of example env files
+get_example_env_files() {
+  find "$ENV_DIR" -maxdepth 1 -type f -name "example.*.env" -exec basename {} \;
+}
+
+# Function to show the main menu
+main_menu() {
+  local example_files=($(get_example_env_files))
+  local choices=()
+
+  for file in "${example_files[@]}"; do
+    choices+=("$file")
+  done
+
+  selected=$(printf "%s\n" "${choices[@]}" | gum choose --header "Select an environment file to manage")
+
+  if [ -n "$selected" ]; then
+    manage_env_file "$selected"
+  fi
+}
+
+# Function to manage the selected env file
+manage_env_file() {
+  local example_file="$1"
+  local env_file="${example_file/example./}"
+  
+  if [ ! -f "$ENV_DIR/$env_file" ]; then
+    cp "$ENV_DIR/$example_file" "$ENV_DIR/$env_file"
+  fi
+
+  nvim "$ENV_DIR/$env_file"
+}
+
+main_menu

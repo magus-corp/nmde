@@ -12,19 +12,23 @@ show_ascii_art() {
 main_menu() {
   show_ascii_art
 
-  local options=("Theme" "Font" "Setup" "Update" "Manual" "Exit")
+  local options=("Theme" "Font" "Setup" "Update" "Composes" "Manual" "Exit")
   choice=$(printf "%s\n" "${options[@]}" | gum choose --header "") || exit 0
   case "$choice" in
   Theme) theme_menu ;;
-  Font)
+  Font) 
     nmde-font-menu
     ack_command
     main_menu
-    ;;
-  Update) update_menu ;;
-  Setup) setup_menu ;;
-  Manual) open_manual ;;
-  Exit) clear && exit 0 ;;
+    ;; 
+  Update) update_menu ;; 
+  Setup) setup_menu ;; 
+  Composes) 
+    nmde-composes
+    main_menu
+    ;; 
+  Manual) open_manual ;; 
+  Exit) clear && exit 0 ;; 
   esac
 }
 
@@ -103,13 +107,14 @@ remove_theme_prompt() {
 
 setup_menu() {
   show_ascii_art
-  local menu=("Dropbox" "Steam" "Docker DBs" "Fingerprint sensor" "Fido2 device" "Back")
+  local menu=("Dropbox" "Steam" "Docker DBs" "Fingerprint sensor" "Fido2 device" "Manage Envs" "Back")
   local commands=(
     "nmde-setup-dropbox"
     "nmde-setup-steam"
     "setup_docker_dbs"
     "nmde-setup-fingerprint"
     "nmde-setup-fido2"
+    "nmde-env"
     "main_menu"
   )
   local choice
