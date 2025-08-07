@@ -1,22 +1,24 @@
-version: '3'
+version: "3.8"
+
+networks:
+  minio_network:
+    driver: bridge
+    name: minio_network
 
 services:
   minio:
     image: docker.io/bitnami/minio:2022
+    container_name: minio
     restart: always
     ports:
-      - '9000:9000'
-      - '9001:9001'
-    networks:
-      - minionetwork
+      - "9000:9000"
+      - "9001:9001"
     volumes:
-      - 'minio_data:/data'
+      - minio_data:/data
     env_file:
       - ./env_files/minio.env
-
-networks:
-  minionetwork:
-    driver: bridge
+    networks:
+      - minio_network
 
 volumes:
   minio_data:
