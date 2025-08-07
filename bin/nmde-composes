@@ -2,7 +2,6 @@
 
 COMPOSE_DIR="$HOME/.local/share/nmde/composes"
 STATE_FILE="$COMPOSE_DIR/.state"
-PRE_SYNC_STATE_FILE="$COMPOSE_DIR/.pre_sync_state"
 
 # Function to check for dependencies
 check_dependencies() {
