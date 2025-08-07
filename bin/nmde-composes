@@ -6,11 +6,13 @@ PRE_SYNC_STATE_FILE="$COMPOSE_DIR/.pre_sync_state"
 
 # Function to check for dependencies
 check_dependencies() {
-  if ! command -v gum &> /dev/null; then
+  if ! command -v gum &> /dev/null;
+  then
     echo "gum could not be found. Please install it." >&2
     exit 1
   fi
-  if ! command -v yq &> /dev/null; then
+  if ! command -v yq &> /dev/null;
+  then
     echo "yq could not be found. Please install it." >&2
     exit 1
   fi
@@ -25,7 +27,8 @@ check_ports() {
   for file in "${compose_files[@]}"; do
     # Use yq to parse ports, handling different formats
     ports=$(yq e '.services.*.ports[] | select(.) | .published' "$COMPOSE_DIR/$file" 2>/dev/null)
-    for port in $ports; do
+    for port in $ports;
+    do
       if [[ " ${all_ports[@]} " =~ " ${port} " ]]; then
         gum style --foreground 196 "Port conflict found for port $port in $file"
         conflict_found=true
@@ -35,7 +38,8 @@ check_ports() {
     done
   done
 
-  if $conflict_found; then
+  if $conflict_found;
+  then
     gum confirm "Port conflicts detected. Continue anyway?" || exit 0
   fi
 }
@@ -65,7 +69,8 @@ toggle_service() {
     fi
   done
 
-  if ! $found; then
+  if ! $found;
+  then
     new_up_files+=("$service_to_toggle")
   fi
 
@@ -99,4 +104,56 @@ sync_composes() {
   rm -f "$PRE_SYNC_STATE_FILE"
 }
 
-main_menu()
+main_menu() {
+  check_dependencies
+  
+  # Store the initial state to compare for downs
+  cp "$STATE_FILE" "$PRE_SYNC_STATE_FILE" 2>/dev/null || touch "$PRE_SYNC_STATE_FILE"
+
+  while true; do
+    local compose_files=($(get_compose_files))
+    local up_files=($(get_up_files))
+    local choices=()
+
+    for file in "${compose_files[@]}"; do
+      if [[ " ${up_files[@]} " =~ " ${file} " ]]; then
+        choices+=("✓ $file")
+      else
+        choices+=("  $file")
+      fi
+    done
+
+    choices+=("") # separator
+    choices+=("[Sync and Exit]")
+    choices+=("[Cancel]")
+
+    choice=$(printf "%s\n" "${choices[@]}" | gum choose --height 20 --header "Toggle services with <enter>. Confirm with Sync.")
+    
+    # If user presses escape, gum choose returns nothing
+    if [ -z "$choice" ]; then
+      choice="[Cancel]"
+    fi
+
+    case "$choice" in
+      "[Sync and Exit]")
+        check_ports "${up_files[@]}"
+        sync_composes
+        gum spin --spinner "globe" --title "Sync complete!" -- sleep 1
+        break
+        ;;
+      "[Cancel]")
+        # Restore original state
+        mv "$PRE_SYNC_STATE_FILE" "$STATE_FILE" 2>/dev/null || rm -f "$STATE_FILE"
+        break
+        ;;
+      "") # separator
+        ;;
+      *)
+        service_to_toggle=$(echo "$choice" | sed -e 's/✓ //' -e 's/  //')
+        toggle_service "$service_to_toggle"
+        ;;
+    esac
+  done
+}
+
+main_menu
