@@ -5,4 +5,4 @@ yay -S --noconfirm --needed \
   imagemagick \
   mariadb-libs postgresql-libs \
   github-cli \
-  lazygit lazydocker-bin yq
+  lazygit lazydocker-bin yq sqlite

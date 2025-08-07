@@ -1,38 +1,75 @@
 #!/bin/bash
 
-ENV_DIR="$HOME/.local/share/nmde/composes/env_files"
+DB_FILE="$HOME/.local/share/nmde/composes/envs.db"
 
-# Function to get the list of example env files
-get_example_env_files() {
-  find "$ENV_DIR" -maxdepth 1 -type f -name "example.*.env" -exec basename {} \;
+# Function to list services
+list_services() {
+  sqlite3 "$DB_FILE" "SELECT DISTINCT service FROM envs ORDER BY service;"
 }
 
-# Function to show the main menu
-main_menu() {
-  local example_files=($(get_example_env_files))
-  local choices=()
-
-  for file in "${example_files[@]}"; do
-    choices+=("$file")
+# Function to list variables for a service
+list_vars() {
+  local service=$1
+  sqlite3 "$DB_FILE" "SELECT key, value FROM envs WHERE service = '$service' ORDER BY key;" | while IFS='|' read -r key value; do
+    printf "% -40s = %s\n" "$key" "$value"
   done
+}
 
-  selected=$(printf "%s\n" "${choices[@]}" | gum choose --header "Select an environment file to manage")
+# Function to add or edit a variable
+edit_var() {
+  local service=$1
+  local key=$(gum input --placeholder "Variable Name")
+  # If the key is empty, do nothing
+  [ -z "$key" ] && return
+  
+  local current_value=$(sqlite3 "$DB_FILE" "SELECT value FROM envs WHERE service = '$service' AND key = '$key';")
+  local new_value=$(gum input --placeholder "Variable Value" --value "$current_value")
 
-  if [ -n "$selected" ]; then
-    manage_env_file "$selected"
+  sqlite3 "$DB_FILE" "INSERT OR REPLACE INTO envs (service, key, value) VALUES ('$service', '$key', '$new_value');"
+}
+
+# Function to delete a variable
+delete_var() {
+  local service=$1
+  local var_to_delete=$(sqlite3 "$DB_FILE" "SELECT key FROM envs WHERE service = '$service' ORDER BY key;" | gum choose)
+  
+  [ -z "$var_to_delete" ] && return
+
+  if gum confirm "Delete '$var_to_delete' from '$service'?"; then
+    sqlite3 "$DB_FILE" "DELETE FROM envs WHERE service = '$service' AND key = '$var_to_delete';"
   fi
 }
 
-# Function to manage the selected env file
-manage_env_file() {
-  local example_file="$1"
-  local env_file="${example_file/example./}"
-  
-  if [ ! -f "$ENV_DIR/$env_file" ]; then
-    cp "$ENV_DIR/$example_file" "$ENV_DIR/$env_file"
-  fi
+# Service menu
+service_menu() {
+  local service=$1
+  while true; do
+    clear
+    gum style --border normal --margin "1" --padding "1" "Managing Environment for: $service"
+    list_vars "$service"
+    
+    local choice=$(gum choose "Edit/Add Variable" "Delete Variable" "Back")
 
-  nvim "$ENV_DIR/$env_file"
+    case "$choice" in
+      "Edit/Add Variable") edit_var "$service" ;; 
+      "Delete Variable") delete_var "$service" ;; 
+      "Back" | "") break ;; 
+    esac
+  done
+}
+
+# Main menu
+main_menu() {
+  while true; do
+    clear
+    local service=$(list_services | gum choose --height 20 --header "Select a service to manage")
+    
+    if [ -n "$service" ]; then
+      service_menu "$service"
+    else
+      break # Exit if user presses escape
+    fi
+  done
 }
 
 main_menu

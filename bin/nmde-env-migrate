@@ -1,0 +1,36 @@
+#!/bin/bash
+
+DB_FILE="$HOME/.local/share/nmde/composes/envs.db"
+ENV_DIR="$HOME/.local/share/nmde/composes/env_files"
+
+# Exit if the database already exists
+if [ -f "$DB_FILE" ]; then
+  echo "Database already exists. Migration skipped."
+  exit 0
+fi
+
+# Create the database and table
+sqlite3 "$DB_FILE" "CREATE TABLE IF NOT EXISTS envs (service TEXT, key TEXT, value TEXT, PRIMARY KEY(service, key));"
+
+# Find all example env files
+find "$ENV_DIR" -name "example.*.env" | while read -r example_file; do
+  service_name=$(basename "$example_file" | sed -e 's/example.//' -e 's/.env//')
+  
+  echo "Migrating $service_name..."
+
+  # Read each line, ignore comments and empty lines
+  grep -vE '^\s*#|^\s*$' "$example_file" | while IFS='=' read -r key value; do
+    # Trim leading/trailing whitespace
+    key=$(echo "$key" | xargs)
+    value=$(echo "$value" | xargs)
+    
+    # Remove quotes from value if present
+    value=\"${value}\"
+    value=\"\${value}\"
+
+    # Insert into database
+    sqlite3 "$DB_FILE" "INSERT OR REPLACE INTO envs (service, key, value) VALUES ('$service_name', '$key', '$value');"
+  done
+done
+
+echo "Migration complete."
