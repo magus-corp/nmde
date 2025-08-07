@@ -2,17 +2,16 @@
 
 COMPOSE_DIR="$HOME/.local/share/nmde/composes"
 STATE_FILE="$COMPOSE_DIR/.state"
+PRE_SYNC_STATE_FILE="$COMPOSE_DIR/.pre_sync_state"
 
 # Function to check for dependencies
 check_dependencies() {
-  if ! command -v gum &> /dev/null;
-  then
-    echo "gum could not be found. Please install it."
+  if ! command -v gum &> /dev/null; then
+    echo "gum could not be found. Please install it." >&2
     exit 1
   fi
-  if ! command -v yq &> /dev/null;
-  then
-    echo "yq could not be found. Please install it."
+  if ! command -v yq &> /dev/null; then
+    echo "yq could not be found. Please install it." >&2
     exit 1
   fi
 }
@@ -21,99 +20,83 @@ check_dependencies() {
 check_ports() {
   local compose_files=($@)
   local all_ports=()
-  local has_conflict=false
+  local conflict_found=false
 
   for file in "${compose_files[@]}"; do
-    ports=$(yq e '.services.*.ports[].published' "$COMPOSE_DIR/$file" 2>/dev/null)
+    # Use yq to parse ports, handling different formats
+    ports=$(yq e '.services.*.ports[] | select(.) | .published' "$COMPOSE_DIR/$file" 2>/dev/null)
     for port in $ports; do
       if [[ " ${all_ports[@]} " =~ " ${port} " ]]; then
-        gum confirm "Port conflict found for port $port in $file. Continue?" || exit 1
-        has_conflict=true
+        gum style --foreground 196 "Port conflict found for port $port in $file"
+        conflict_found=true
       else
         all_ports+=("$port")
       fi
     done
   done
+
+  if $conflict_found; then
+    gum confirm "Port conflicts detected. Continue anyway?" || exit 0
+  fi
 }
 
 # Function to get the list of compose files
 get_compose_files() {
-  find "$COMPOSE_DIR" -maxdepth 1 -type f \( -name "*.yaml" -o -name "*.yml" \) -exec basename {} \;
+  find "$COMPOSE_DIR" -maxdepth 1 -type f \( -name "*.yaml" -o -name "*.yml" \) -exec basename {} \; | sort
 }
 
 # Function to get the list of up compose files
 get_up_files() {
-  if [ -f "$STATE_FILE" ]; then
-    cat "$STATE_FILE"
-  fi
+  [ -f "$STATE_FILE" ] && cat "$STATE_FILE"
 }
 
-# Function to show the main menu
-main_menu() {
-  check_dependencies
-  
-  local compose_files=($(get_compose_files))
-  local up_files=($(get_up_files))
-  
-  # Pre-select the files that are already up
-  local selected_options=""
-  for file in "${compose_files[@]}"; do
-    if [[ " ${up_files[@]} " =~ " ${file} " ]]; then
-      if [ -z "$selected_options" ]; then
-        selected_options="$file"
-      else
-        selected_options="$selected_options,$file"
-      fi
+# Function to toggle a service's state
+toggle_service() {
+  local service_to_toggle=$1
+  local up_files_array=($(get_up_files))
+  local new_up_files=()
+  local found=false
+
+  for service in "${up_files_array[@]}"; do
+    if [[ "$service" == "$service_to_toggle" ]]; then
+      found=true
+    else
+      new_up_files+=("$service")
     fi
   done
 
-  gum style --border normal --margin "1" --padding "1" --border-foreground 212 "Select services to run with <space>. Press <enter> to sync."
-
-  selected=$(gum choose --no-limit --selected="$selected_options" "${compose_files[@]}")
-
-  if [ -n "$selected" ]; then
-    local selected_files=()
-    while IFS= read -r line; do
-      selected_files+=("$line")
-    done <<< "$selected"
-    
-    check_ports "${selected_files[@]}"
-    sync_composes "${selected_files[@]}"
-  else
-    # If nothing is selected, it means all services should be down
-    sync_composes
+  if ! $found; then
+    new_up_files+=("$service_to_toggle")
   fi
-  
-  gum spin --spinner "globe" --title "Done!" -- sleep 1
+
+  printf "%s\n" "${new_up_files[@]}" | sort > "$STATE_FILE"
 }
 
 # Function to sync the compose files
 sync_composes() {
-  local selected_files=($@)
-  local up_files=($(get_up_files))
+  local new_up_files=($(get_up_files))
+  local old_up_files=($(if [ -f "$PRE_SYNC_STATE_FILE" ]; then cat "$PRE_SYNC_STATE_FILE"; fi))
 
-  # Bring up selected files
-  for file in "${selected_files[@]}"; do
-    if [[ ! " ${up_files[@]} " =~ " ${file} " ]]; then
-      echo "Bringing up $file"
-      docker-compose -f "$COMPOSE_DIR/$file" up -d
-    fi
-  done
+  gum spin --spinner "dot" --title "Syncing services..." --show-output -- bash -c "
+    set -e # Exit on error
+    # Bring up services that are in new state but not in old state
+    for file in ${new_up_files[@]}; do
+      if [[ ! \" ${old_up_files[@]} \" =~ \" ${file} \" ]]; then
+        echo \"Bringing up $file...\"
+        docker-compose -f \"$COMPOSE_DIR/$file\" up -d
+      fi
+    done
 
-  # Bring down unselected files
-  for file in "${up_files[@]}"; do
-    if [[ ! " ${selected_files[@]} " =~ " ${file} " ]]; then
-      echo "Bringing down $file"
-      docker-compose -f "$COMPOSE_DIR/$file" down
-    fi
-  done
-
-  # Update state file
-  if [ ${#selected_files[@]} -gt 0 ]; then
-    printf "%s\n" "${selected_files[@]}" > "$STATE_FILE"
-  else
-    rm -f "$STATE_FILE"
-  fi
+    # Bring down services that are in old state but not in new state
+    for file in ${old_up_files[@]}; do
+      if [[ ! \" ${new_up_files[@]} \" =~ \" ${file} \" ]]; then
+        echo \"Bringing down $file...\"
+        docker-compose -f \"$COMPOSE_DIR/$file\" down --remove-orphans
+      fi
+    done
+  "
+  
+  rm -f "$PRE_SYNC_STATE_FILE"
 }
 
-main_menu
+main_menu()
