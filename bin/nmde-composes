@@ -71,7 +71,9 @@ sync_composes() {
 
   echo "Bringing up selected services..."
   for service_file in "${up_services[@]}"; do
-    docker-compose -f "$COMPOSE_DIR/$service_file" up -d --remove-orphans
+    local service_name=$(basename "$service_file" .yaml | sed 's/.yml//')
+    local env_file_path="$ENV_DIR/$service_name.env"
+    docker-compose -f "$COMPOSE_DIR/$service_file" --env-file "$env_file_path" up -d --remove-orphans
   done
   
   echo "Shutting down deselected services..."

@@ -12,7 +12,7 @@ list_vars() {
   local service=$1
   # The { } brackets are essential to prevent syntax errors if a service has no envs
   sqlite3 "$DB_FILE" "SELECT key, value FROM envs WHERE service = '$service' ORDER BY key;" | {
-    while IFS='|' read -r key value;
+    while IFS='|' read -r key value; do
       printf "% -40s = %s\n" "$key" "$value"
     done
   }
@@ -22,7 +22,6 @@ list_vars() {
 edit_var() {
   local service=$1
   local key=$(gum input --placeholder "Variable Name")
-  # If the key is empty, do nothing
   [ -z "$key" ] && return
   
   local current_value=$(sqlite3 "$DB_FILE" "SELECT value FROM envs WHERE service = '$service' AND key = '$key';")
@@ -35,7 +34,6 @@ edit_var() {
 delete_var() {
   local service=$1
   local var_to_delete=$(sqlite3 "$DB_FILE" "SELECT key FROM envs WHERE service = '$service' ORDER BY key;" | gum choose)
-  
   [ -z "$var_to_delete" ] && return
 
   if gum confirm "Delete '$var_to_delete' from '$service'?"; then
@@ -46,7 +44,7 @@ delete_var() {
 # Service menu
 service_menu() {
   local service=$1
-  while true;
+  while true; do
     clear
     gum style --border normal --margin "1" --padding "1" "Managing Environment for: $service"
     list_vars "$service"
@@ -69,7 +67,7 @@ main_menu() {
     exit 0
   fi
 
-  while true;
+  while true; do
     clear
     local service=$(list_services | gum choose --height 20 --header "Select a service to manage")
     
