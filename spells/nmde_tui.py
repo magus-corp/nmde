@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+
+import os
+import subprocess
+import gumpython
+from pathlib import Path
+
+# --- Configuration ---
+HOME = Path.home()
+NMDE_DIR = HOME / ".local/share/nmde"
+SPELLS_DIR = NMDE_DIR / "spells"
+
+# --- Helper Functions ---
+def run_spell(spell_name, *args):
+    """Runs a spell from the spells directory."""
+    spell_path = SPELLS_DIR / spell_name
+    try:
+        subprocess.run([str(spell_path)] + list(args), check=True)
+    except FileNotFoundError:
+        print(f"Error: Spell '{spell_name}' not found.")
+        gumpython.spin(spinner="points", time=2)
+    except subprocess.CalledProcessError as e:
+        print(f"Error running spell '{spell_name}': {e}")
+        gumpython.spin(spinner="points", time=2)
+
+def ack_command():
+    """Displays a 'Done!' message."""
+    gumpython.spin(title="Done!", spinner="globe", time=1)
+
+# --- TUI Menus ---
+def theme_menu():
+    # This will be migrated later. For now, we call the old script.
+    run_spell("bin/nmde-theme-menu")
+
+def update_menu():
+    # This will be migrated later. For now, we call the old script.
+    run_spell("bin/nmde-update")
+
+def setup_menu():
+    """Displays the setup menu."""
+    while True:
+        os.system("clear")
+        choice = gumpython.choose([
+            "Dropbox", "Steam", "Docker DBs", "Fingerprint sensor", 
+            "Fido2 device", "Manage Envs", "Back"
+        ])
+
+        if not choice or choice == "Back":
+            break
+        
+        if choice == "Manage Envs":
+            run_spell("env_manager.py")
+        else:
+            # For now, call the old bash scripts for other setup items
+            script_name = f"nmde-setup-{choice.lower().replace(' ', '-')}"
+            run_spell(f"bin/{script_name}")
+
+def main_menu():
+    """Displays the main application menu."""
+    while True:
+        os.system("clear")
+        # We can add the ASCII art back later
+        choice = gumpython.choose([
+            "Theme", "Font", "Setup", "Update", "Composes", "Manual", "Exit"
+        ])
+
+        if not choice or choice == "Exit":
+            break
+        
+        if choice == "Theme":
+            theme_menu()
+        elif choice == "Font":
+            run_spell("bin/nmde-font-menu")
+            ack_command()
+        elif choice == "Setup":
+            setup_menu()
+        elif choice == "Update":
+            update_menu()
+        elif choice == "Composes":
+            run_spell("compose_manager.py")
+            ack_command()
+        elif choice == "Manual":
+            # This can be a direct call
+            subprocess.Popen(["chromium", "--new-window", "--ozone-platform=wayland", "--app=https://manuals.omamix.org/2/the-nmde-manual"])
+
+if __name__ == "__main__":
+    main_menu()
