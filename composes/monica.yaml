@@ -1,10 +1,14 @@
-# Run Monica with fpm+nginx backend
+version: "3.8"
 
-version: "3.9"
+networks:
+  monica_network:
+    driver: bridge
+    name: monica_network
 
 services:
   app:
     image: monica:fpm
+    container_name: monica-app
     depends_on:
       - db
     environment:
@@ -20,19 +24,25 @@ services:
     volumes:
       - data:/var/www/html/storage
     restart: always
-  
+    networks:
+      - monica_network
+
   web:
     build: ./web
+    container_name: monica-web
     ports:
-      - 80:80
+      - "8088:80"
     depends_on:
       - app
     volumes:
       - data:/var/www/html/storage:ro
     restart: always
+    networks:
+      - monica_network
 
   db:
     image: mariadb:11
+    container_name: monica-db
     environment:
       - MYSQL_RANDOM_ROOT_PASSWORD=true
       - MYSQL_DATABASE=monica
@@ -41,7 +51,8 @@ services:
     volumes:
       - mysql:/var/lib/mysql
     restart: always
-
+    networks:
+      - monica_network
 
 volumes:
   data:
