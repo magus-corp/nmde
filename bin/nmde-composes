@@ -39,8 +39,10 @@ check_for_port_overlaps() {
 
     for file in $(get_compose_files); do
         local file_path="$COMPOSE_DIR/$file"
+        # The 'jq' filter with '?' handles cases where ports are not defined.
+        # Redirecting stderr to /dev/null to keep the output clean.
         local file_ports
-        file_ports=$("$YQ_PATH" e '.services.*.ports[]?' "$file_path" | cut -d: -f1)
+        file_ports=$("$YQ_PATH" '.services.*.ports[]?' "$file_path" 2>/dev/null | cut -d: -f1)
         for port in $file_ports; do
             if [[ " ${ports[*]} " =~ " ${port} " ]]; then
                 overlaps+=("$port")
