@@ -1,0 +1,141 @@
+#!/bin/bash
+# shellcheck disable=SC2155
+
+# This script will be developed to manage docker-compose applications.
+# It will follow the style of the nmde script, using gum for the UI.
+
+COMPOSE_DIR="/home/cmgus/projects/magus/nmde/composes"
+STATE_FILE="$COMPOSE_DIR/.state"
+VENV_DIR="/home/cmgus/projects/magus/nmde/.venv"
+NMDE_ENV_SCRIPT="/home/cmgus/projects/magus/nmde/bin/nmde-env"
+
+# Function to get the list of docker-compose files
+get_compose_files() {
+    find "$COMPOSE_DIR" -maxdepth 1 -type f \( -name "*.yml" -o -name "*.yaml" \) -exec basename {} \;
+}
+
+# Function to get the list of "up" applications
+get_up_apps() {
+    if [[ -f "$STATE_FILE" ]]; then
+        cat "$STATE_FILE"
+    fi
+}
+
+# Function to check for port overlaps
+check_for_port_overlaps() {
+    local ports=()
+    local files=()
+    local overlaps=()
+
+    # Activate the virtual environment
+    # shellcheck source=/dev/null
+    source "$VENV_DIR/bin/activate"
+
+    for file in $(get_compose_files); do
+        local file_path="$COMPOSE_DIR/$file"
+        local file_ports
+        file_ports=$(yq e '.services.*.ports[]?' "$file_path" | cut -d: -f1)
+        for port in $file_ports; do
+            if [[ " ${ports[*]} " =~ " ${port} " ]]; then
+                overlaps+=("$port")
+            else
+                ports+=("$port")
+                files+=("$file")
+            fi
+        done
+    done
+
+    if [[ ${#overlaps[@]} -gt 0 ]]; then
+        echo "WARNING: Port overlap detected!"
+        for port in "${overlaps[@]}"; do
+            echo "Port $port is used in multiple files:"
+            local i=0
+            for p in "${ports[@]}"; do
+                if [[ "$p" == "$port" ]]; then
+                    echo "  - ${files[$i]}"
+                fi
+                i=$((i+1))
+            done
+        done
+        gum spin --spinner "globe" --title "Port overlap detected!" -- sleep 5
+    fi
+}
+
+# Function to sync the applications
+sync_apps() {
+    local up_apps
+    mapfile -t up_apps < <(get_up_apps)
+    local all_apps
+    mapfile -t all_apps < <(get_compose_files)
+
+    for app in "${all_apps[@]}"; do
+        if [[ " ${up_apps[*]} " =~ " ${app} " ]]; then
+            # App is selected to be up
+            local app_name
+            app_name=$(basename "$app" .yml | sed 's/\.yaml$//')
+            local env_vars
+            env_vars=$($NMDE_ENV_SCRIPT list "$app_name" | awk '{print "-e " $1 "=" $2}' ORS=' ')
+            echo "docker-compose -f $COMPOSE_DIR/$app up -d $env_vars"
+        else
+            # App is not selected, so it should be down
+            echo "docker-compose -f $COMPOSE_DIR/$app down"
+        fi
+    done
+}
+
+
+# Main menu
+main_menu() {
+    check_for_port_overlaps
+    clear
+    local options=()
+    mapfile -t options < <(get_compose_files)
+    options+=("Sync")
+
+    local up_apps=()
+    mapfile -t up_apps < <(get_up_apps)
+
+    local selected_options=$(printf "%s
+" "${options[@]}" | gum choose --no-limit --header "Select applications to be UP" --selected "$(printf "%s
+" "${up_apps[@]}")")
+
+    if [[ -z "$selected_options" ]]; then
+        # If nothing is selected, we consider all apps to be down.
+        echo "" > "$STATE_FILE"
+        echo "All applications are now down."
+        sleep 1
+    else
+        local sync_chosen=false
+        local new_state=""
+        for item in $selected_options; do
+            if [[ "$item" == "Sync" ]]; then
+                sync_chosen=true
+            else
+                new_state+="$item
+"
+            fi
+        done
+
+        echo -n "$new_state" > "$STATE_FILE"
+        echo "State updated."
+        sleep 1
+
+        if $sync_chosen; then
+            echo "Generating docker-compose commands..."
+            sync_apps
+            echo "Commands generated. The Tester should run them."
+            sleep 3
+        fi
+    fi
+    main_menu
+}
+
+main() {
+    # Create the state file if it doesn't exist
+    if [[ ! -f "$STATE_FILE" ]]; then
+        touch "$STATE_FILE"
+    fi
+    main_menu
+}
+
+main

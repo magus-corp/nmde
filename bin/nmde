@@ -12,8 +12,9 @@ show_ascii_art() {
 main_menu() {
   show_ascii_art
 
-  local options=("Theme" "Font" "Setup" "Update" "Manual" "Exit")
-  choice=$(printf "%s\n" "${options[@]}" | gum choose --header "") || exit 0
+  local options=("Theme" "Font" "Setup" "Update" "Composes" "Manual" "Exit")
+  choice=$(printf "%s
+" "${options[@]}" | gum choose --header "") || exit 0
   case "$choice" in
   Theme) theme_menu ;;
   Font)
@@ -23,6 +24,10 @@ main_menu() {
     ;;
   Update) update_menu ;;
   Setup) setup_menu ;;
+  Composes)
+    nmde-composes
+    main_menu
+    ;;
   Manual) open_manual ;;
   Exit) clear && exit 0 ;;
   esac
@@ -42,7 +47,8 @@ update_menu() {
     "main_menu"
   )
   local choice
-  choice=$(printf "%s\n" "${menu[@]}" | gum choose --header="Update") || main_menu
+  choice=$(printf "%s
+" "${menu[@]}" | gum choose --header="Update") || main_menu
   for i in "${!menu[@]}"; do
     if [[ "${menu[$i]}" == "$choice" ]]; then
       if [[ "$choice" == "Back" ]]; then
@@ -68,7 +74,8 @@ theme_menu() {
     "main_menu"
   )
   local choice
-  choice=$(printf "%s\n" "${menu[@]}" | gum choose --header="Theme") || main_menu
+  choice=$(printf "%s
+" "${menu[@]}" | gum choose --header="Theme") || main_menu
   for i in "${!menu[@]}"; do
     if [[ "${menu[$i]}" == "$choice" ]]; then
       if [[ "$choice" == "Back" ]]; then
@@ -113,7 +120,8 @@ setup_menu() {
     "main_menu"
   )
   local choice
-  choice=$(printf "%s\n" "${menu[@]}" | gum choose --header="Setup") || main_menu
+  choice=$(printf "%s
+" "${menu[@]}" | gum choose --header="Setup") || main_menu
   for i in "${!menu[@]}"; do
     if [[ "${menu[$i]}" == "$choice" ]]; then
       if [[ "$choice" == "Back" ]]; then
@@ -130,7 +138,8 @@ setup_menu() {
 
 setup_docker_dbs() {
   options=("MariaDB" "MySQL" "Redis" "PostgreSQL")
-  choices=$(printf "%s\n" "${options[@]}" | gum choose --no-limit --header "Select databases (space to select, return to install, esc to cancel)") || main_menu
+  choices=$(printf "%s
+" "${options[@]}" | gum choose --no-limit --header "Select databases (space to select, return to install, esc to cancel)") || main_menu
 
   if [[ -n "$choices" ]]; then
     for db in $choices; do
