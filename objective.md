@@ -13,8 +13,9 @@ This applications should be standartized:
 - The environment manipulation should be storage and integrated with an kinda of sqlite (or something idk - envs is a open problem in my mind you can sugest a solution think elegant)
 
 # Changes to the project re-strucutring 
-We need to rewrite the entire bin files into python. We are using only textual and rich for the cli/tui abstraction.
-Also We will add the relevant scripts and integrate them into our nmde application.
+- We need to rewrite the entire bin files into python. We are using only textual and rich for the cli/tui abstraction.
+- We will add the relevant scripts and integrate them into our nmde application. In somekind of Spellbook
+- I was thinking about the ./bin and ./spellbook the bin for the essential scripts for the work of the nmde itself and the spellbook where we put the scripts that are useful but not essencial or part of the function of the system.
 
 
 ## Developpment Loop
