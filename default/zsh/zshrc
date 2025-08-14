@@ -167,3 +167,13 @@ npx() {
 # This can be done separately as it's less likely to cause issues.
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/cmgus/.google-cloud-sdk/path.zsh.inc' ]; then . '/home/cmgus/.google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/cmgus/.google-cloud-sdk/completion.zsh.inc' ]; then . '/home/cmgus/.google-cloud-sdk/completion.zsh.inc'; fi
+
+# Fix later
+#
+export PATH=$PATH:$HOME/.config/goose/mcp-hermit/bin
