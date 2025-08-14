@@ -52,6 +52,14 @@ def main():
     refresh_waybar_parser = refresh_subparsers.add_parser("waybar", help="Refresh waybar configuration.")
     refresh_waybar_parser.set_defaults(func=run_refresh_waybar)
 
+    # Spellbook command
+    spellbook_parser = subparsers.add_parser("spellbook", help="A collection of utility scripts.")
+    spellbook_subparsers = spellbook_parser.add_subparsers(dest="spell", help="Available spells")
+
+    mkv_to_mp4_parser = spellbook_subparsers.add_parser("mkv-to-mp4", help="Convert an MKV file to MP4.")
+    mkv_to_mp4_parser.add_argument("input_file", help="Path to the MKV file to convert.")
+    mkv_to_mp4_parser.set_defaults(func=run_mkv_to_mp4)
+
     args = parser.parse_args()
     if hasattr(args, "func"):
         args.func(args)
@@ -118,6 +126,11 @@ def run_refresh_waybar(args):
     """Refreshes waybar configuration."""
     from .refresh import refresh_waybar
     refresh_waybar()
+
+def run_mkv_to_mp4(args):
+    """Converts an MKV file to MP4."""
+    from .spellbook.video import mkv_to_mp4
+    mkv_to_mp4(args.input_file)
 
 if __name__ == "__main__":
     main()
