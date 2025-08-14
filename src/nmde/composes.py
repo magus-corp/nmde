@@ -14,6 +14,7 @@ from textual.containers import VerticalScroll
 # Assuming the script is run from the project root
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 COMPOSES_DIR = PROJECT_ROOT / "composes"
+ENV_FILES_DIR = COMPOSES_DIR / "env_files"
 STATE_FILE = COMPOSES_DIR / ".state"
 
 
@@ -148,9 +149,17 @@ class NmdeComposes(App):
 
     def run_compose_command(self, compose_file: Path, command: str):
         """Runs a docker-compose command."""
+        cmd = ["docker-compose", "-f", str(compose_file)]
+        
+        env_file = ENV_FILES_DIR / f"{compose_file.stem}.env"
+        if env_file.exists():
+            cmd.extend(["--env-file", str(env_file)])
+
+        cmd.extend(command.split())
+
         try:
             subprocess.run(
-                ["docker-compose", "-f", str(compose_file), command],
+                cmd,
                 check=True,
                 capture_output=True,
                 text=True,
