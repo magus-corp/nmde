@@ -176,8 +176,3 @@ class NmdeComposes(App):
     def action_toggle_dark(self) -> None:
         """An action to toggle dark mode."""
         self.dark = not self.dark
-
-
-if __name__ == "__main__":
-    app = NmdeComposes()
-    app.run()

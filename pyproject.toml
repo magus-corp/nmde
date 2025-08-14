@@ -12,6 +12,9 @@ dependencies = [
 ]
 requires-python = ">=3.10"
 
+[project.scripts]
+nmde = "nmde.cli:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
