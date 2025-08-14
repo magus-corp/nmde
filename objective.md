@@ -12,6 +12,11 @@ This applications should be standartized:
 - After launch the visibility and overall manipulation of the applications will be done from the lazydocker application.
 - The environment manipulation should be storage and integrated with an kinda of sqlite (or something idk - envs is a open problem in my mind you can sugest a solution think elegant)
 
+# Changes to the project re-strucutring 
+We need to rewrite the entire bin files into python. We are using only textual and rich for the cli/tui abstraction.
+Also We will add the relevant scripts and integrate them into our nmde application.
+
+
 ## Developpment Loop
 
 1) Evaluate: Always think in what you will do, how you will do it and the conseguences
