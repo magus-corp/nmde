@@ -19,6 +19,10 @@ def main():
     power_menu_parser = subparsers.add_parser("menu-power", help="Show the power menu.")
     power_menu_parser.set_defaults(func=run_power_menu)
 
+    # Restart Waybar command
+    restart_waybar_parser = subparsers.add_parser("restart-waybar", help="Restart the Waybar service.")
+    restart_waybar_parser.set_defaults(func=run_restart_waybar)
+
     args = parser.parse_args()
     if hasattr(args, "func"):
         args.func(args)
@@ -40,6 +44,11 @@ def run_power_menu(args):
     """Shows the power menu."""
     from .menu import show_power_menu
     show_power_menu()
+
+def run_restart_waybar(args):
+    """Restarts the Waybar service."""
+    from .waybar import restart_waybar
+    restart_waybar()
 
 if __name__ == "__main__":
     main()
