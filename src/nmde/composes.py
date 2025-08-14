@@ -4,6 +4,7 @@ import os
 import json
 import subprocess
 from pathlib import Path
+import yaml
 
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Checkbox, Button
@@ -77,11 +78,15 @@ class NmdeComposes(App):
 
     def run_sync(self):
         """Runs the sync logic."""
-        self.notify("Syncing services...")
+        self.notify("Running pre-flight checks...")
         new_state = {}
         for checkbox in self.query(Checkbox):
             new_state[checkbox.id] = checkbox.value
 
+        if not self.pre_flight_check(new_state):
+            return
+
+        self.notify("Syncing services...")
         for service, is_active in new_state.items():
             was_active = self.services_state.get(service, False)
             
@@ -101,6 +106,45 @@ class NmdeComposes(App):
         self.save_state(new_state)
         self.services_state = new_state
         self.notify("Sync complete!")
+
+    def pre_flight_check(self, new_state: dict) -> bool:
+        """
+        Checks for port conflicts and invalid YAML files for services to be activated.
+        """
+        ports_in_use = {}
+        services_to_activate = [s for s, a in new_state.items() if a]
+
+        for service in services_to_activate:
+            if service not in self.compose_file_map:
+                continue
+            
+            compose_file = COMPOSES_DIR / self.compose_file_map[service]
+            try:
+                with open(compose_file, "r") as f:
+                    data = yaml.safe_load(f)
+                    if not data or "services" not in data:
+                        continue
+                    
+                    for service_name, service_data in data["services"].items():
+                        if "ports" in service_data:
+                            for port_mapping in service_data["ports"]:
+                                host_port = str(port_mapping).split(":")[0]
+                                if host_port in ports_in_use:
+                                    conflict_service = ports_in_use[host_port]
+                                    self.notify(
+                                        f"Port conflict on {host_port} between {service} and {conflict_service}",
+                                        severity="error",
+                                        timeout=10,
+                                    )
+                                    return False
+                                ports_in_use[host_port] = service
+            except yaml.YAMLError as e:
+                self.notify(f"Invalid YAML in {compose_file.name}: {e}", severity="error", timeout=10)
+                return False
+            except IOError as e:
+                self.notify(f"Error reading {compose_file.name}: {e}", severity="error", timeout=10)
+                return False
+        return True
 
     def run_compose_command(self, compose_file: Path, command: str):
         """Runs a docker-compose command."""
