@@ -67,3 +67,67 @@ Contributions are welcome! If you have any ideas, suggestions, or bug reports, p
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+## Installation Flow
+
+Here is a visual representation of the `install.sh` script's execution flow. The main script orchestrates a series of stages, with each stage sourcing scripts from specific directories to perform its tasks.
+
+```mermaid
+graph TD
+    A[install.sh] --> B[Position-Independent Setup];
+    B --> C[Stage 1: Preflight];
+    C --> D[Stage 2: Configuration];
+    D --> E[Stage 3: Development];
+    E --> F[Stage 4: Plymouth Logo];
+    F --> G[Stage 5: Desktop];
+    G --> H[Stage 6: Apps];
+    H --> I[Stage 7: System Updates];
+    I --> J[Stage 8: Reboot];
+
+    subgraph "Preflight (install/preflight)"
+        C --- C1[aur.sh];
+        C --- C2[presentation.sh];
+    end
+
+    subgraph "Configuration (install/config)"
+        D --- D1[identification.sh];
+        D --- D2[config.sh];
+        D --- D3[detect-keyboard-layout.sh];
+        D --- D4[fix-fkeys.sh];
+        D --- D5[network.sh];
+        D --- D6[power.sh];
+        D --- D7[timezones.sh];
+        D --- D8[login.sh];
+        D --- D9[nvidia.sh];
+    end
+
+    subgraph "Development (install/development)"
+        E --- E1[terminal.sh];
+        E --- E2[development.sh];
+        E --- E3[nvim.sh];
+        E --- E4[ruby.sh];
+        E --- E5[docker.sh];
+        E --- E6[firewall.sh];
+        E --- E7[zsh.sh];
+    end
+
+    subgraph "Plymouth Logo (bin)"
+        F --- F1[nmde-generate-logo];
+    end
+
+    subgraph "Desktop (install/desktop)"
+        G --- G1[desktop.sh];
+        G --- G2[hyprlandia.sh];
+        G --- G3[theme.sh];
+        G --- G4[bluetooth.sh];
+        G --- G5[asdcontrol.sh];
+        G --- G6[fonts.sh];
+        G --- G7[printer.sh];
+    end
+
+    subgraph "Apps (install/apps)"
+        H --- H1[webapps.sh];
+        H --- H2[xtras.sh];
+        H --- H3[mimetypes.sh];
+    end
+```
