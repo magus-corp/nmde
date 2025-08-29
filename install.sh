@@ -8,23 +8,23 @@ set -e
 # Define the destination directory for nmde
 NMDE_DEST_DIR="$HOME/.local/share/nmde"
 # Get the directory of the currently running script (assumes it's in the project root)
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 # Check if we are already running from the final destination directory
 if [ "$SCRIPT_DIR" != "$NMDE_DEST_DIR" ]; then
-    echo "Preparing nmde for installation..."
-    # Ensure the parent directory exists
-    mkdir -p "$HOME/.local/share"
-    # Remove any previous installation to ensure a clean state
-    rm -rf "$NMDE_DEST_DIR"
-    # Copy the entire project directory to the destination
-    cp -r "$SCRIPT_DIR" "$NMDE_DEST_DIR"
-    echo "Installation files are now located in $NMDE_DEST_DIR."
-    echo "Re-launching the installer from the new location..."
-    echo ""
-    # Execute the script from its new, standardized location and exit the current script
-    bash "$NMDE_DEST_DIR/install.sh"
-    exit 0
+  echo "Preparing nmde for installation..."
+  # Ensure the parent directory exists
+  mkdir -p "$HOME/.local/share"
+  # Remove any previous installation to ensure a clean state
+  rm -rf "$NMDE_DEST_DIR"
+  # Copy the entire project directory to the destination
+  cp -r "$SCRIPT_DIR" "$NMDE_DEST_DIR"
+  echo "Installation files are now located in $NMDE_DEST_DIR."
+  echo "Re-launching the installer from the new location..."
+  echo ""
+  # Execute the script from its new, standardized location and exit the current script
+  bash "$NMDE_DEST_DIR/install.sh"
+  exit 0
 fi
 
 # --- END: Make the script position-independent ---
@@ -49,6 +49,9 @@ catch_errors() {
 }
 
 trap catch_errors ERR
+
+export nmde_text=$(gum input --placeholder "Enter the branding of your system" --prompt "Branding> ")
+echo nmde_text >$NMDE_DEST_DIR/logo.txt
 
 show_logo() {
   clear
@@ -78,6 +81,7 @@ source $nmde_INSTALL/config/power.sh
 source $nmde_INSTALL/config/timezones.sh
 source $nmde_INSTALL/config/login.sh
 source $nmde_INSTALL/config/nvidia.sh
+source $nmde_INSTALL/config/fix_symlinks.sh
 
 # Development
 show_logo decrypt 920
@@ -101,12 +105,6 @@ show_subtext "Installing desktop tools [3/5]"
 source $nmde_INSTALL/desktop/desktop.sh
 source $nmde_INSTALL/desktop/hyprlandia.sh
 source $nmde_INSTALL/desktop/theme.sh
-
-# TODO: Add feature to configure Plymouth boot animation.
-# FIXME: The theme name is incorrect and causes an error.
-# show_subtext "Configuring boot animation"
-# sudo plymouth-set-default-theme adi-arch
-# sudo mkinitcpio -P
 
 source $nmde_INSTALL/desktop/bluetooth.sh
 source $nmde_INSTALL/desktop/asdcontrol.sh

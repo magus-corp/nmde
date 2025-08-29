@@ -1,6 +1,6 @@
 #!/bin/bash
 
-yay -S --noconfirm --needed \
+paru -S --noconfirm --needed \
   python-gobject \
   brightnessctl playerctl pamixer wiremix wireplumber \
   fcitx5 fcitx5-gtk fcitx5-qt wl-clip-persist \
@@ -11,7 +11,7 @@ yay -S --noconfirm --needed \
 
 # Add screen recorder based on GPU
 if lspci | grep -qi 'nvidia'; then
-  yay -S --noconfirm --needed wf-recorder
+  paru -S --noconfirm --needed wf-recorder
 else
-  yay -S --noconfirm --needed wl-screenrec
+  paru -S --noconfirm --needed wl-screenrec
 fi

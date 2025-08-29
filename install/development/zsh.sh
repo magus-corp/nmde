@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # Ensure zsh is installed for Arch Linux
-if ! command -v zsh &> /dev/null; then
-    echo "Zsh is not installed. Installing it now using pacman..."
-    sudo pacman -S --noconfirm zsh
-    
-    # Verify installation
-    if ! command -v zsh &> /dev/null; then
-        echo "Failed to install Zsh. Please install it manually and run this script again."
-        exit 1
-    fi
-    echo "Zsh has been successfully installed."
+if ! command -v zsh &>/dev/null; then
+  echo "Zsh is not installed. Installing it now using pacman..."
+  sudo pacman -S --noconfirm zsh
+
+  # Verify installation
+  if ! command -v zsh &>/dev/null; then
+    echo "Failed to install Zsh. Please install it manually and run this script again."
+    exit 1
+  fi
+  echo "Zsh has been successfully installed."
 fi
 
 echo "Setting up Zsh and Powerlevel10k..."
@@ -18,33 +18,33 @@ echo "Setting up Zsh and Powerlevel10k..."
 # Install Oh My Zsh
 echo "Installing Oh My Zsh..."
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+  sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 else
-    echo "Oh My Zsh is already installed."
+  echo "Oh My Zsh is already installed."
 fi
 
 # Install Powerlevel10k
 echo "Installing Powerlevel10k..."
 if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 else
-    echo "Powerlevel10k is already installed."
+  echo "Powerlevel10k is already installed."
 fi
 
 # Install zsh-autosuggestions
 echo "Installing zsh-autosuggestions..."
 if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]; then
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+  git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 else
-    echo "zsh-autosuggestions is already installed."
+  echo "zsh-autosuggestions is already installed."
 fi
 
 # Install zsh-syntax-highlighting
 echo "Installing zsh-syntax-highlighting..."
 if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]; then
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 else
-    echo "zsh-syntax-highlighting is already installed."
+  echo "zsh-syntax-highlighting is already installed."
 fi
 
 # Link .zshrc and .p10k.zsh
