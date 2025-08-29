@@ -1,6 +1,6 @@
 #!/bin/bash
 
-yay -S --noconfirm --needed \
+paru -S --noconfirm --needed \
   wget curl unzip inetutils impala \
   fd eza fzf ripgrep zoxide bat jq \
   wl-clipboard fastfetch btop \

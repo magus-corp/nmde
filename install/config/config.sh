@@ -43,13 +43,13 @@ git config --global pull.rebase true
 git config --global init.defaultBranch master
 
 # Set identification from install inputs
-if [[ -n "${nmde_USER_NAME//[[:space:]]/}" ]]; then
-  git config --global user.name "$nmde_USER_NAME"
-fi
-
-if [[ -n "${nmde_USER_EMAIL//[[:space:]]/}" ]]; then
-  git config --global user.email "$nmde_USER_EMAIL"
-fi
+# if [[ -n "${nmde_USER_NAME//[[:space:]]/}" ]]; then
+#   git config --global user.name "$nmde_USER_NAME"
+# fi
+#
+# if [[ -n "${nmde_USER_EMAIL//[[:space:]]/}" ]]; then
+#   git config --global user.email "$nmde_USER_EMAIL"
+# fi
 
 # Set default XCompose that is triggered with CapsLock
 tee ~/.XCompose >/dev/null <<EOF
