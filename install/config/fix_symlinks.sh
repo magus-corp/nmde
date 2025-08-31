@@ -6,6 +6,7 @@ for config_path in $HOME/.local/share/nmde/config/*; do
   target_path="$HOME/.config/$config_name"
   echo "Replacing $target_path with a symlink."
   rm -rf "$target_path"
+  mkdir -p $target_path
   ln -s "$config_path" "$target_path"
 done
 
