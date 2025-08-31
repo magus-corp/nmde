@@ -51,7 +51,7 @@ catch_errors() {
 trap catch_errors ERR
 
 export nmde_text=$(gum input --placeholder "Enter the branding of your system" --prompt "Branding> ")
-echo nmde_text >$NMDE_DEST_DIR/logo.txt
+echo $nmde_text >$NMDE_DEST_DIR/logo.txt
 
 show_logo() {
   clear

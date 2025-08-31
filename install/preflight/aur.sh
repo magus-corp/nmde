@@ -1,6 +1,6 @@
 #!/bin/bash
 # Manually install yay from AUR if not already available
-if ! command -v yay &>/dev/null; then
+if ! command -v paru &>/dev/null; then
   # Install build tools
   sudo pacman -Sy --needed --noconfirm base-devel
   cd /tmp
