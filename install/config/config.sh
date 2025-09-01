@@ -4,7 +4,11 @@
 if [ -z "$nmde_BARE" ]; then
   for config_src in "$HOME/.local/share/nmde/config"/*; do
     config_name=$(basename "$config_src")
-    config_dest="$HOME/.config/$config_name"
+    config_dest_parent="$HOME/.config"
+    config_dest="$config_dest_parent/$config_name"
+
+    # Ensure the parent directory exists
+    mkdir -p "$config_dest_parent"
 
     # If the source is a directory, check for a nested directory with the same name
     if [ -d "$config_src" ]; then
