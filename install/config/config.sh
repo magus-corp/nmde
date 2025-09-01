@@ -4,32 +4,13 @@
 if [ -z "$nmde_BARE" ]; then
   for config_src in "$HOME/.local/share/nmde/config"/*; do
     config_name=$(basename "$config_src")
-    config_dest_parent="$HOME/.config"
-    config_dest="$config_dest_parent/$config_name"
+    config_dest="$HOME/.config/$config_name"
 
-    # Ensure the parent directory exists
-    mkdir -p "$config_dest_parent"
+    # Remove existing destination
+    rm -rf "$config_dest"
 
-    # If the source is a directory, check for a nested directory with the same name
-    if [ -d "$config_src" ]; then
-      nested_config_src="$config_src/$config_name"
-      if [ "$config_name" == "hypr" ]; then
-        # For hypr, link the nested directory
-        echo "Linking nested config for hypr from $nested_config_src"
-        rm -rf "$config_dest"
-        ln -s "$nested_config_src" "$config_dest"
-      else
-        # Otherwise, link the source dir itself
-        echo "Linking config for $config_name from $config_src"
-        rm -rf "$config_dest"
-        ln -s "$config_src" "$config_dest"
-      fi
-    else
-      # If the source is a file, just link it
-      echo "Linking config file $config_name"
-      rm -f "$config_dest"
-      ln -s "$config_src" "$config_dest"
-    fi
+    # Copy the source to the destination
+    cp -r "$config_src" "$config_dest"
   done
 fi
 
