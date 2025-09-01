@@ -9,9 +9,9 @@ if [ -z "$nmde_BARE" ]; then
     # If the source is a directory, check for a nested directory with the same name
     if [ -d "$config_src" ]; then
       nested_config_src="$config_src/$config_name"
-      if [ -d "$nested_config_src" ]; then
-        # If nested dir exists, link it to the target
-        echo "Linking nested config for $config_name from $nested_config_src"
+      if [ "$config_name" == "hypr" ]; then
+        # For hypr, link the nested directory
+        echo "Linking nested config for hypr from $nested_config_src"
         rm -rf "$config_dest"
         ln -s "$nested_config_src" "$config_dest"
       else
