@@ -51,10 +51,11 @@ move_files() {
 # --- Main Script Logic ---
 gum spin --spinner dot --title "Setting up directories..." -- bash -c "mkdir -p ~/documents ~/pictures ~/videos ~/sandbox"
 
-move_files "Documents" "$HOME/documents" "*.pdf" "*.md" "*.txt" "*.doc" "*.docx"
+move_files "Documents" "$HOME/documents" "*.pdf" "*.md" "*.txt" "*.doc" "*.docx" "*.odt" "*.csv"
 move_files "Images" "$HOME/pictures" "*.jpg" "*.jpeg" "*.png" "*.gif" "*.bmp" "*.svg" "*.webp"
 move_files "Videos" "$HOME/videos" "*.mp4" "*.mov" "*.avi" "*.mkv" "*.webm"
 move_files "Audios" "$HOME/audios" "*.mp3" "*.ogg"
+move_files "Compressed Archives" "$HOME/compressed" "*.zip" "*.tar"
 move_files "Code & Executables" "$HOME/sandbox" "*.py" "*.rs" "*.go" "*.sh" "-executable"
 
 # --- Completion Message ---
